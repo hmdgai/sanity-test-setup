@@ -2,6 +2,8 @@
 import {getTeamMembers} from '../lib/queries'
 import {urlFor} from '../sanity'
 
+export const prerender = false
+
 const team = await getTeamMembers()
 ---
 
