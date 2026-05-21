@@ -1,0 +1,316 @@
+---
+/**
+ * thank-you-booking.astro
+ * ─────────────────────────────────────────────────────────
+ * Confirmation page shown after a booking or appointment
+ * request is submitted. Premium animated design.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const nextSteps = [
+  {
+    num: "01",
+    title: "Request Received",
+    desc: "Your booking request has reached our team.",
+  },
+  {
+    num: "02",
+    title: "Personal Reply",
+    desc: "We'll be in touch by email or phone, usually within one working day.",
+  },
+  {
+    num: "03",
+    title: "Arrive 5 Minutes Early",
+    desc: "Once your appointment is confirmed, please arrive 5 minutes early to settle in.",
+  },
+];
+---
+
+<BaseLayout
+  title="Booking Request Received — ClinicName"
+  description="Thank you for booking with ClinicName. A member of our team will be in touch by email or phone within one working day."
+  noindex={true}
+>
+
+  <section class="ty-page">
+
+    <!-- Soft brand tint glow -->
+    <div class="ty-bg-glow" aria-hidden="true"></div>
+
+    <div class="ty-inner">
+
+      <!-- ── Animated confirmation icon ───────────────── -->
+      <div class="ty-icon-wrap anim-pop">
+        <div class="ty-ring">
+          <svg
+            class="ty-svg"
+            viewBox="0 0 64 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle
+              class="ty-circle"
+              cx="32"
+              cy="32"
+              r="28"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"
+            />
+            <path
+              class="ty-check"
+              d="M20 33l8 8 16-16"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <!-- ── Eyebrow ────────────────────────────────── -->
+      <span class="eyebrow anim-up delay-a">Request Received</span>
+
+      <!-- ── Headline ───────────────────────────────── -->
+      <h1 class="ty-heading anim-up delay-b">
+        Thanks for booking
+      </h1>
+
+      <!-- ── Supporting text ───────────────────────── -->
+      <p class="ty-body anim-up delay-c">
+        A member of our team will be in touch by email or phone within one
+        working day to confirm your appointment.
+      </p>
+
+      <!-- ── What happens next ─────────────────────── -->
+      <div class="ty-next anim-up delay-d">
+        <p class="ty-next-label">What happens next</p>
+        <div class="ty-next-grid">
+          {nextSteps.map(step => (
+            <div class="ty-step">
+              <span class="ty-step-num">{step.num}</span>
+              <p class="ty-step-title">{step.title}</p>
+              <p class="ty-step-desc">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- ── CTA ───────────────────────────────────── -->
+      <div class="anim-up delay-e">
+        <a href="/" class="btn btn-default">Back to Homepage</a>
+      </div>
+
+    </div>
+
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ── Page layout ────────────────────────────────────────────── */
+  .ty-page {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 1.5rem;
+    background: var(--color-white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Soft radial gradient from brand accent at top */
+  .ty-bg-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 90% 55% at 50% -10%,
+      var(--color-accent) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Inner content wrapper ──────────────────────────────────── */
+  .ty-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    max-width: 52rem;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* ── Animated confirmation ring ─────────────────────────────── */
+  .ty-icon-wrap {
+    margin-bottom: 0.25rem;
+  }
+
+  .ty-ring {
+    width: 5.5rem;
+    height: 5.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-white);
+    border-radius: 50%;
+    color: var(--color-primary);
+    box-shadow:
+      0 0 0 10px var(--color-accent),
+      0 16px 48px rgba(219, 0, 62, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .ty-svg {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  /* Circle stroke draws clockwise from 12 o'clock */
+  .ty-circle {
+    stroke-dasharray: 176;
+    stroke-dashoffset: 176;
+    transform-origin: 32px 32px;
+    transform: rotate(-90deg);
+    animation: drawCircle 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+  }
+
+  /* Check draws in once circle is complete */
+  .ty-check {
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+    animation: drawCheck 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.78s forwards;
+  }
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  .ty-heading {
+    font-size: clamp(2rem, 5vw, 2.875rem);
+    font-weight: var(--font-weight-extrabold);
+    color: var(--color-headline);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .ty-body {
+    font-size: var(--text-lg);
+    color: var(--color-caption);
+    line-height: 1.75;
+    margin: 0;
+    max-width: 30rem;
+  }
+
+  /* ── What happens next ──────────────────────────────────────── */
+  .ty-next {
+    width: 100%;
+    border-top: 1px solid var(--color-border);
+    padding-top: 2rem;
+    margin-top: 0.5rem;
+  }
+
+  .ty-next-label {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-caption);
+    margin: 0 0 1.5rem;
+  }
+
+  .ty-next-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .ty-next-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .ty-step {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    text-align: left;
+  }
+
+  .ty-step-num {
+    font-family: var(--font-heading);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.08em;
+    color: var(--color-primary);
+  }
+
+  .ty-step-title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-headline);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .ty-step-desc {
+    font-size: var(--text-xs);
+    color: var(--color-caption);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* ── Entrance animations ────────────────────────────────────── */
+  .anim-pop {
+    opacity: 0;
+    transform: scale(0.55);
+    animation: popIn 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0s forwards;
+  }
+
+  .anim-up {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: fadeUp 0.55s ease-out forwards;
+  }
+
+  .delay-a { animation-delay: 0.9s;  }
+  .delay-b { animation-delay: 1.05s; }
+  .delay-c { animation-delay: 1.2s;  }
+  .delay-d { animation-delay: 1.35s; }
+  .delay-e { animation-delay: 1.5s;  }
+
+  /* ── Keyframes ──────────────────────────────────────────────── */
+  @keyframes drawCircle {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes popIn {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

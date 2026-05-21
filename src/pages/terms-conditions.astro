@@ -1,0 +1,968 @@
+---
+/**
+ * terms-conditions.astro
+ * ─────────────────────────────────────────────────────────
+ * Premium two-column legal page matching privacy-policy.astro.
+ * Scroll progress bar · IntersectionObserver active sidebar ·
+ * Primary colour brand accents throughout.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const sections = [
+  { id: "overview",           label: "Overview",               num: "01" },
+  { id: "online-store",       label: "Online Store Terms",     num: "02" },
+  { id: "general",            label: "General Conditions",     num: "03" },
+  { id: "accuracy",           label: "Accuracy & Timeliness",  num: "04" },
+  { id: "modifications",      label: "Modifications & Prices", num: "05" },
+  { id: "products-services",  label: "Products or Services",   num: "06" },
+  { id: "billing",            label: "Billing & Account Info", num: "07" },
+  { id: "optional-tools",     label: "Optional Tools",         num: "08" },
+  { id: "third-party",        label: "Third-Party Links",      num: "09" },
+  { id: "user-comments",      label: "User Comments",          num: "10" },
+  { id: "personal-info",      label: "Personal Information",   num: "11" },
+  { id: "errors",             label: "Errors & Omissions",     num: "12" },
+  { id: "prohibited",         label: "Prohibited Uses",        num: "13" },
+  { id: "disclaimer",         label: "Disclaimer & Liability", num: "14" },
+  { id: "indemnification",    label: "Indemnification",        num: "15" },
+  { id: "governing-law",      label: "Governing Law",          num: "16" },
+  { id: "changes",            label: "Changes to Terms",       num: "17" },
+  { id: "contact",            label: "Contact",                num: "18" },
+];
+---
+
+<BaseLayout
+  title="Terms & Conditions — ClinicName"
+  description="Terms and Conditions for ClinicName. Read our terms of service and usage policy."
+>
+
+  <!-- ── Scroll progress bar ───────────────────────────────── -->
+  <div class="tc-progress" aria-hidden="true" id="tc-progress"></div>
+
+  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <section class="tc-hero">
+    <img
+      src="/images/termsandconditions.webp"
+      alt=""
+      class="tc-hero-img"
+      aria-hidden="true"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      width="1600"
+      height="900"
+    />
+    <div class="tc-hero-overlay" aria-hidden="true"></div>
+    <div class="container-main tc-hero-content">
+      <div class="container-inner">
+        <span class="eyebrow">Legal</span>
+        <h1 class="tc-hero-h1">Terms &amp; Conditions</h1>
+        <div class="tc-meta">
+          <span class="tc-meta-badge">Version Date: January 1st 2020</span>
+          <p class="tc-meta-intro">
+            Please read these Terms and Conditions carefully before accessing or
+            using our website. By accessing or using any part of the site, you
+            agree to be bound by these Terms and Conditions.
+          </p>
+        </div>
+        <!-- Mobile section pills -->
+        <nav class="tc-mobile-nav" aria-label="Jump to section">
+          {sections.map(s => (
+            <a href={`#${s.id}`} class="tc-mobile-pill">{s.label}</a>
+          ))}
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Two-column layout ─────────────────────────────────── -->
+  <section class="tc-body">
+    <div class="container-main">
+      <div class="tc-layout">
+
+        <!-- ── Sticky sidebar ─────────────────────────── -->
+        <aside class="tc-sidebar" aria-label="Terms sections">
+          <div class="tc-sidebar-inner">
+
+            <div class="tc-sidebar-header">
+              <span class="tc-sidebar-title">On this page</span>
+              <span class="tc-sidebar-count">{sections.length} sections</span>
+            </div>
+
+            <nav>
+              <ul class="tc-nav-list">
+                {sections.map(s => (
+                  <li>
+                    <a
+                      href={`#${s.id}`}
+                      class="tc-nav-link"
+                      data-nav={s.id}
+                    >
+                      <span class="tc-nav-num">{s.num}</span>
+                      <span class="tc-nav-label">{s.label}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div class="tc-sidebar-card">
+              <div class="tc-sidebar-card-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <p class="tc-sidebar-card-text">Questions about these terms?</p>
+              <a href="/contact" class="tc-sidebar-cta">Get in touch →</a>
+            </div>
+
+          </div>
+        </aside>
+
+        <!-- ── Terms content ───────────────────────────── -->
+        <div class="tc-content">
+
+          <p class="tc-lead">
+            This website is operated by our business. Throughout the site, the terms
+            "we", "us" and "our" refer to our business. We offer this website, including
+            all information, tools and services available from this site to you, the user,
+            conditioned upon your acceptance of all terms, conditions, policies and
+            notices stated here. By visiting our site, you engage in our "Service" and
+            agree to be bound by the following terms and conditions.
+          </p>
+
+          <!-- 01 Overview -->
+          <article id="overview" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">01</span>
+              <h2>Overview</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                By visiting our site and/or purchasing something from us, you engage in
+                our "Service" and agree to be bound by the following terms and conditions,
+                including those additional terms and conditions and policies referenced
+                herein. These Terms and Conditions apply to all users of the site,
+                including without limitation users who are browsers, vendors, customers,
+                merchants, and/or contributors of content.
+              </p>
+              <p>
+                Any new features or tools which are added to the current store shall also
+                be subject to the Terms and Conditions. We reserve the right to update,
+                change or replace any part of these Terms and Conditions by posting
+                updates and/or changes to our website. It is your responsibility to check
+                this page periodically for changes.
+              </p>
+            </div>
+          </article>
+
+          <!-- 02 Online Store Terms -->
+          <article id="online-store" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">02</span>
+              <h2>Online Store Terms</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                By agreeing to these Terms and Conditions, you represent that you are at
+                least the age of majority in your state or province of residence, or that
+                you are the age of majority and have given us your consent to allow any
+                of your minor dependents to use this site.
+              </p>
+              <ul>
+                <li>You may not use our products for any illegal or unauthorised purpose.</li>
+                <li>You must not transmit any worms, viruses, or any code of a destructive nature.</li>
+                <li>A breach or violation of any of the Terms will result in an immediate termination of your Services.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- 03 General Conditions -->
+          <article id="general" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">03</span>
+              <h2>General Conditions</h2>
+            </div>
+            <div class="tc-section-body">
+              <ul>
+                <li>We reserve the right to refuse service to anyone for any reason at any time.</li>
+                <li>You understand that your content may be transferred unencrypted and involve transmissions over various networks. Credit card information is always encrypted during transfer over networks.</li>
+                <li>You agree not to reproduce, duplicate, copy, sell, resell or exploit any portion of the Service without express written permission by us.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- 04 Accuracy & Timeliness -->
+          <article id="accuracy" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">04</span>
+              <h2>Accuracy, Completeness and Timeliness of Information</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                We are not responsible if information made available on this site is not
+                accurate, complete or current. The material on this site is provided for
+                general information only and should not be relied upon as the sole basis
+                for making decisions without consulting primary, more accurate, or more
+                timely sources of information.
+              </p>
+              <p>
+                This site may contain certain historical information provided for your
+                reference only. We reserve the right to modify the contents of this site
+                at any time, but have no obligation to update any information on our site.
+              </p>
+            </div>
+          </article>
+
+          <!-- 05 Modifications -->
+          <article id="modifications" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">05</span>
+              <h2>Modifications to the Service and Prices</h2>
+            </div>
+            <div class="tc-section-body">
+              <ul>
+                <li>Prices for our products are subject to change without notice.</li>
+                <li>We reserve the right at any time to modify or discontinue the Service without notice.</li>
+                <li>We shall not be liable to you or any third-party for any modification, price change, suspension or discontinuance of the Service.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- 06 Products or Services -->
+          <article id="products-services" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">06</span>
+              <h2>Products or Services</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                Certain products or services may be available exclusively online through
+                the website and may have limited quantities, subject to our Return Policy.
+              </p>
+              <p>
+                We have made every effort to display as accurately as possible the colours
+                and images of our products. We cannot guarantee that your monitor's
+                display of any colour will be accurate.
+              </p>
+              <p>
+                We reserve the right to limit the sales of our products or services to
+                any person, geographic region or jurisdiction. All descriptions of
+                products or product pricing are subject to change at any time without
+                notice at our sole discretion.
+              </p>
+              <div class="tc-notice">
+                <p>
+                  We do not warrant that the quality of any products, services, or
+                  information purchased or obtained by you will meet your expectations,
+                  or that any errors in the Service will be corrected.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 07 Billing -->
+          <article id="billing" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">07</span>
+              <h2>Accuracy of Billing and Account Information</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                We reserve the right to refuse any order you place with us. We may limit
+                or cancel quantities purchased per person, per household or per order.
+                In the event that we make a change to or cancel an order, we may attempt
+                to notify you by contacting the e-mail and/or billing address provided
+                at the time the order was made.
+              </p>
+              <p>
+                You agree to provide current, complete and accurate purchase and account
+                information for all purchases made at our store, and to promptly update
+                your account and other information so that we can complete your
+                transactions and contact you as needed.
+              </p>
+            </div>
+          </article>
+
+          <!-- 08 Optional Tools -->
+          <article id="optional-tools" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">08</span>
+              <h2>Optional Tools</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                We may provide you with access to third-party tools over which we neither
+                monitor nor have any control nor input. You acknowledge and agree that we
+                provide access to such tools "as is" and "as available" without any
+                warranties, representations or conditions of any kind and without any
+                endorsement.
+              </p>
+              <p>
+                Any use by you of optional tools offered through the site is entirely at
+                your own risk and discretion. We may also, in the future, offer new
+                services and/or features through the website which shall also be subject
+                to these Terms and Conditions.
+              </p>
+            </div>
+          </article>
+
+          <!-- 09 Third-Party Links -->
+          <article id="third-party" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">09</span>
+              <h2>Third-Party Links</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                Certain content, products and services available via our Service may
+                include materials from third parties. Third-party links on this site may
+                direct you to third-party websites that are not affiliated with us.
+              </p>
+              <p>
+                We are not responsible for examining or evaluating the content or accuracy
+                of third-party materials or websites, and we do not warrant and will not
+                have any liability or responsibility for any third-party materials,
+                websites, products, or services.
+              </p>
+            </div>
+          </article>
+
+          <!-- 10 User Comments -->
+          <article id="user-comments" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">10</span>
+              <h2>User Comments, Feedback and Other Submissions</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                If you send creative ideas, suggestions, proposals, plans, or other
+                materials (collectively, "comments"), you agree that we may, at any time,
+                without restriction, edit, copy, publish, distribute, translate and
+                otherwise use in any medium any comments that you forward to us.
+              </p>
+              <p>
+                You agree that your comments will not violate any right of any third party,
+                including copyright, trademark, privacy, personality or other personal or
+                proprietary right. You are solely responsible for any comments you make
+                and their accuracy.
+              </p>
+            </div>
+          </article>
+
+          <!-- 11 Personal Information -->
+          <article id="personal-info" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">11</span>
+              <h2>Personal Information</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                Your submission of personal information through the site is governed by
+                our <a href="/privacy-policy">Privacy Policy</a>. Please review our
+                Privacy Policy to understand our practices.
+              </p>
+            </div>
+          </article>
+
+          <!-- 12 Errors & Omissions -->
+          <article id="errors" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">12</span>
+              <h2>Errors, Inaccuracies and Omissions</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                Occasionally there may be information on our site that contains
+                typographical errors, inaccuracies or omissions that may relate to
+                product descriptions, pricing, promotions, offers, or availability.
+                We reserve the right to correct any errors, inaccuracies or omissions,
+                and to change or update information at any time without prior notice.
+              </p>
+            </div>
+          </article>
+
+          <!-- 13 Prohibited Uses -->
+          <article id="prohibited" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">13</span>
+              <h2>Prohibited Uses</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>You are prohibited from using the site or its content:</p>
+              <ul>
+                <li>For any unlawful purpose or to solicit others to perform unlawful acts</li>
+                <li>To violate any international, federal, provincial or state regulations, rules, or laws</li>
+                <li>To infringe upon or violate our intellectual property rights or the intellectual property rights of others</li>
+                <li>To harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate</li>
+                <li>To submit false or misleading information</li>
+                <li>To upload or transmit viruses or any other type of malicious code</li>
+                <li>To collect or track the personal information of others</li>
+                <li>To spam, phish, pharm, pretext, spider, crawl, or scrape</li>
+                <li>To interfere with or circumvent the security features of the Service</li>
+              </ul>
+              <p>We reserve the right to terminate your use of the Service for violating any of the prohibited uses.</p>
+            </div>
+          </article>
+
+          <!-- 14 Disclaimer -->
+          <article id="disclaimer" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">14</span>
+              <h2>Disclaimer of Warranties; Limitation of Liability</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                We do not guarantee, represent or warrant that your use of our service
+                will be uninterrupted, timely, secure or error-free. The service and all
+                products and services delivered to you are provided "as is" and "as
+                available" for your use, without any representation, warranties or
+                conditions of any kind.
+              </p>
+              <div class="tc-notice">
+                <p>
+                  In no case shall our business, directors, officers, employees, affiliates,
+                  agents, contractors, interns, suppliers, service providers or licensors
+                  be liable for any injury, loss, claim, or any direct, indirect,
+                  incidental, punitive, special, or consequential damages of any kind,
+                  arising from your use of any of the service or any products procured
+                  using the service.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 15 Indemnification -->
+          <article id="indemnification" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">15</span>
+              <h2>Indemnification</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                You agree to indemnify, defend and hold harmless our business and our
+                parent, subsidiaries, affiliates, partners, officers, directors, agents,
+                contractors, licensors, service providers, subcontractors, suppliers,
+                interns and employees, harmless from any claim or demand, including
+                reasonable attorneys' fees, made by any third party due to or arising
+                out of your breach of these Terms and Conditions or your violation of
+                any law or the rights of a third party.
+              </p>
+            </div>
+          </article>
+
+          <!-- 16 Governing Law -->
+          <article id="governing-law" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">16</span>
+              <h2>Governing Law</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                These Terms and Conditions and any separate agreements whereby we provide
+                you Services shall be governed by and construed in accordance with the
+                laws of the country within which this business is operated.
+              </p>
+              <p>
+                Any ambiguities in the interpretation of these Terms and Conditions shall
+                not be construed against the drafting party.
+              </p>
+            </div>
+          </article>
+
+          <!-- 17 Changes -->
+          <article id="changes" class="tc-section">
+            <div class="tc-section-header">
+              <span class="tc-section-num">17</span>
+              <h2>Changes to Terms and Conditions</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                You can review the most current version of the Terms and Conditions at
+                any time on this page. We reserve the right, at our sole discretion, to
+                update, change or replace any part of these Terms and Conditions by
+                posting updates and changes to our website.
+              </p>
+              <p>
+                Your continued use of or access to our website or the Service following
+                the posting of any changes to these Terms and Conditions constitutes
+                acceptance of those changes.
+              </p>
+            </div>
+          </article>
+
+          <!-- 18 Contact -->
+          <article id="contact" class="tc-section tc-section--last">
+            <div class="tc-section-header">
+              <span class="tc-section-num">18</span>
+              <h2>Contact Information</h2>
+            </div>
+            <div class="tc-section-body">
+              <p>
+                Questions about the Terms and Conditions should be sent to us via our
+                contact details provided on the website.
+              </p>
+              <a href="/contact" class="btn btn-default">Send Us a Message</a>
+            </div>
+          </article>
+
+        </div><!-- end tc-content -->
+      </div><!-- end tc-layout -->
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ── Scroll progress bar ────────────────────────────────────── */
+  .tc-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: var(--tc-scroll, 0%);
+    background: var(--color-primary);
+    z-index: 9999;
+    transition: width 0.08s linear;
+    pointer-events: none;
+  }
+
+  /* ── Hero ───────────────────────────────────────────────────── */
+  .tc-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-hero-dark);
+  }
+
+  .tc-hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.3;
+  }
+
+  .tc-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(4, 3, 3, 0.8) 0%,
+      rgba(4, 3, 3, 0.55) 100%
+    );
+  }
+
+  .tc-hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .tc-hero .container-inner {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  .tc-hero-h1 {
+    color: var(--color-white);
+    margin: 0.75rem 0 0;
+    font-size: var(--text-h1);
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+
+  .tc-meta {
+    margin-top: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 44rem;
+  }
+
+  .tc-meta-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.05em;
+    color: var(--color-primary);
+    background: rgba(219, 0, 62, 0.12);
+    border: 1px solid rgba(219, 0, 62, 0.3);
+    border-radius: 999px;
+    padding: 0.3rem 1rem;
+    width: fit-content;
+  }
+
+  .tc-meta-intro {
+    font-size: 1.0625rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.75;
+    margin: 0;
+    max-width: 38rem;
+  }
+
+  /* ── Mobile section pills ───────────────────────────────────── */
+  .tc-mobile-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @media (min-width: 1024px) {
+    .tc-mobile-nav { display: none; }
+  }
+
+  .tc-mobile-pill {
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    padding: 0.35rem 0.875rem;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .tc-mobile-pill:hover {
+    background: rgba(219, 0, 62, 0.15);
+    border-color: rgba(219, 0, 62, 0.35);
+    color: var(--color-white);
+  }
+
+  /* ── Body layout ────────────────────────────────────────────── */
+  .tc-body {
+    background: var(--color-white);
+    padding-top: 5rem;
+    padding-bottom: 8rem;
+  }
+
+  .tc-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .tc-layout {
+      grid-template-columns: 240px 1fr;
+      gap: 5rem;
+    }
+  }
+
+  /* ── Sidebar ────────────────────────────────────────────────── */
+  .tc-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .tc-sidebar {
+      display: block;
+      position: sticky;
+      top: 2.5rem;
+      max-height: calc(100vh - 5rem);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-border) transparent;
+    }
+  }
+
+  .tc-sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tc-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.875rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .tc-sidebar-title {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-headline);
+  }
+
+  .tc-sidebar-count {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-caption);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.2rem 0.625rem;
+  }
+
+  .tc-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .tc-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+    color: var(--color-caption);
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border-left: 2px solid transparent;
+    transition: color 0.18s, background 0.18s, border-color 0.18s;
+    line-height: 1.4;
+  }
+
+  .tc-nav-num {
+    font-family: var(--font-heading);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.06em;
+    color: var(--color-border);
+    min-width: 1.5rem;
+    transition: color 0.18s;
+  }
+
+  .tc-nav-link:hover {
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border-left-color: var(--color-primary);
+  }
+
+  .tc-nav-link:hover .tc-nav-num {
+    color: var(--color-primary);
+  }
+
+  .tc-nav-link.is-active {
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border-left-color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .tc-nav-link.is-active .tc-nav-num {
+    color: var(--color-primary);
+  }
+
+  .tc-sidebar-card {
+    margin-top: 1.75rem;
+    padding: 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .tc-sidebar-card-icon {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-accent);
+    border-radius: 0.5rem;
+    color: var(--color-primary);
+  }
+
+  .tc-sidebar-card-text {
+    font-size: 0.8125rem;
+    color: var(--color-caption);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .tc-sidebar-cta {
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: opacity 0.15s;
+    width: fit-content;
+  }
+
+  .tc-sidebar-cta:hover {
+    opacity: 0.7;
+  }
+
+  /* ── Content ────────────────────────────────────────────────── */
+  .tc-content {
+    min-width: 0;
+  }
+
+  .tc-lead {
+    font-size: 1.0625rem;
+    line-height: 1.85;
+    color: var(--color-body);
+    margin: 0 0 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* ── Sections ───────────────────────────────────────────────── */
+  .tc-section {
+    padding-bottom: 3.5rem;
+    margin-bottom: 3.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .tc-section--last {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .tc-section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tc-section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-family: var(--font-heading);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .tc-section-header h2 {
+    font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-headline);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .tc-section-body p {
+    font-size: var(--text-sm);
+    line-height: 1.85;
+    color: var(--color-body);
+    margin: 0 0 1rem;
+  }
+
+  .tc-section-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .tc-section-body ul {
+    margin: 0.625rem 0 1.25rem;
+    padding-left: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .tc-section-body li {
+    font-size: var(--text-sm);
+    line-height: 1.75;
+    color: var(--color-body);
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .tc-section-body li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    opacity: 0.6;
+  }
+
+  .tc-section-body a:not(.btn) {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: opacity 0.15s;
+  }
+
+  .tc-section-body a:not(.btn):hover {
+    opacity: 0.75;
+  }
+
+  .tc-notice {
+    margin-top: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius-card);
+  }
+
+  .tc-notice p {
+    font-size: var(--text-xs);
+    color: var(--color-caption);
+    margin: 0;
+    line-height: 1.8;
+  }
+</style>
+
+<script>
+  // ── Scroll progress bar ──────────────────────────────────────
+  const progressBar = document.getElementById('tc-progress');
+  if (progressBar) {
+    const updateProgress = () => {
+      const scrolled = window.scrollY;
+      const total = document.body.scrollHeight - window.innerHeight;
+      const pct = total > 0 ? Math.min((scrolled / total) * 100, 100) : 0;
+      document.documentElement.style.setProperty('--tc-scroll', `${pct}%`);
+    };
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+  }
+
+  // ── IntersectionObserver — active sidebar link ───────────────
+  const sections = document.querySelectorAll('article[id]') as NodeListOf<HTMLElement>;
+  const navLinks = document.querySelectorAll('[data-nav]') as NodeListOf<HTMLElement>;
+
+  if (sections.length && navLinks.length) {
+    const setActive = (id: string) => {
+      navLinks.forEach(link => {
+        link.classList.toggle('is-active', link.getAttribute('data-nav') === id);
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: '-15% 0px -75% 0px', threshold: 0 }
+    );
+
+    sections.forEach(s => observer.observe(s));
+  }
+</script>

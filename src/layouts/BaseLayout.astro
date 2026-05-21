@@ -1,0 +1,324 @@
+---
+/**
+ * BaseLayout.astro
+ * ─────────────────────────────────────────────────────
+ * The single shared wrapper for every page on the site.
+ * Import your global CSS here once — it applies everywhere.
+ *
+ * NOINDEX DEFAULTS TO TRUE.
+ *   The base template ships in noindex mode so client clones cannot
+ *   accidentally appear in Google before the site is ready. Permanent-
+ *   noindex pages (thank-you, 404) still pass `noindex={true}` explicitly
+ *   so the flag survives the eventual default flip.
+ *
+ *   When the user says "go live" / "index the site" / "remove noindex"
+ *   flip the default below to `false`. Don't flip it for normal work.
+ *
+ * Props:
+ *   title              — <title> tag content
+ *   description        — meta description for SEO
+ *   noindex            — defaults to TRUE; pass false explicitly to index a page
+ *   heroImage          — absolute path to the LCP hero image (desktop preload)
+ *   heroImageMobile    — absolute path to the smaller mobile hero image
+ *                        Renders dual <link rel="preload" media="..."> so
+ *                        each device only fetches the variant it needs.
+ *   schema             — optional JSON-LD object (or array) to inject
+ *                        as <script type="application/ld+json">
+ */
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+  /** Desktop / default LCP hero image path (e.g. "/images/hero.webp") */
+  heroImage?: string;
+  /** Smaller mobile variant. When set, the desktop preload becomes media-gated. */
+  heroImageMobile?: string;
+  /** Inject structured data — JSON-LD object or array of objects. */
+  schema?: object | object[];
+}
+
+const {
+  title,
+  description = "Professional clinic providing expert care in the UK.",
+  noindex = true,
+  heroImage,
+  heroImageMobile,
+  schema,
+} = Astro.props;
+
+// Canonical / OG URL.
+// Pages prerender at build time, so Astro.url.origin would bake the
+// build host (localhost, *.pages.dev) into the HTML. Set `site` in
+// astro.config.mjs per-client to anchor these tags to the production
+// origin — falls back to Astro.url.origin during local dev.
+const baseOrigin = Astro.site ? Astro.site.origin : Astro.url.origin;
+const fullUrl    = baseOrigin + Astro.url.pathname;
+
+// Self-hosted fonts are imported inside global.css via @fontsource,
+// so every page that loads global.css (which is all of them) gets
+// Inter + Inter Tight without Google Fonts round-trips.
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import ReviewsSection from "../components/ReviewsSection.astro";
+import CookieConsent from "../components/CookieConsent.astro";
+import { cookieConsentConfig } from "../config/cookie-consent.config";
+
+const cfg = cookieConsentConfig;
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- ── LCP hero image preload ───────────────────────────────
+         Pass heroImage (desktop) and optionally heroImageMobile.
+         When both are set, each preload is gated by a media query
+         so each device only fetches the variant it actually paints.
+         This is the single highest-impact LCP optimisation.
+    ──────────────────────────────────────────────────────────── -->
+    {heroImage && heroImageMobile && (
+      <>
+        <link rel="preload" as="image" href={heroImage} media="(min-width: 768px)" fetchpriority="high" />
+        <link rel="preload" as="image" href={heroImageMobile} media="(max-width: 767px)" fetchpriority="high" />
+      </>
+    )}
+    {heroImage && !heroImageMobile && (
+      <link rel="preload" as="image" href={heroImage} fetchpriority="high" />
+    )}
+
+    <!-- ── DNS prefetch for secondary third-party origins ───────
+         preconnect handles fonts (warm TCP+TLS for render path).
+         dns-prefetch is sufficient for GTM/GA which load async
+         and do not block rendering.
+    ──────────────────────────────────────────────────────────── -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+
+    <!-- ── Fonts ────────────────────────────────────────────────
+         Inter + Inter Tight are self-hosted via @fontsource-variable
+         (imported in the frontmatter). Served from Cloudflare's edge
+         with immutable cache headers. No Google Fonts round-trips, no
+         GDPR concerns about data sent to Google.
+    ──────────────────────────────────────────────────────────── -->
+    <title>{title}</title>
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <link rel="canonical" href={fullUrl} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={fullUrl} />
+    <meta property="og:locale" content="en_GB" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    {schema && (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)}></script>
+    )}
+
+    <!-- ── Security meta tags ────────────────────────────────────
+         These provide baseline security on any host.
+         For stronger enforcement, use HTTP headers via:
+           - public/_headers  (Cloudflare Pages)
+    ──────────────────────────────────────────────────────────── -->
+    <!-- ── Google Consent Mode v2 — MUST be first, before GTM fires ──────────
+         is:inline is critical — without it Astro defers the script and
+         GTM fires before consent defaults are set, breaking Consent Mode v2.
+    ──────────────────────────────────────────────────────────────────────── -->
+    <script is:inline define:vars={{ _ccmPolicyVersion: cfg.policyVersion, _ccmCookieName: cfg.cookieName }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
+      // Default all consent to denied before any tag loads
+      gtag('consent', 'default', {
+        analytics_storage:       'denied',
+        ad_storage:              'denied',
+        ad_user_data:            'denied',
+        ad_personalization:      'denied',
+        functionality_storage:   'denied',
+        personalization_storage: 'denied',
+        security_storage:        'granted',
+        wait_for_update:         500,
+      });
+
+      // Immediately restore consent if visitor already consented this policy version
+      (function () {
+        try {
+          var raw = document.cookie.split(';').find(function (c) {
+            return c.trim().startsWith(_ccmCookieName + '=');
+          });
+          if (raw) {
+            var stored = JSON.parse(decodeURIComponent(raw.split('=').slice(1).join('=')));
+            if (stored && stored.policyVersion === _ccmPolicyVersion) {
+              gtag('consent', 'update', {
+                analytics_storage:       stored.analytics   ? 'granted' : 'denied',
+                ad_storage:              stored.marketing   ? 'granted' : 'denied',
+                ad_user_data:            stored.marketing   ? 'granted' : 'denied',
+                ad_personalization:      stored.marketing   ? 'granted' : 'denied',
+                functionality_storage:   stored.functional  ? 'granted' : 'denied',
+                personalization_storage: stored.functional  ? 'granted' : 'denied',
+              });
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- ── Google Tag Manager — DEFERRED loader ──────────────────────────
+         Why deferred (interim, until Cloudflare Zaraz migration):
+           Loading GTM synchronously (even with async) costs 150-220 KB
+           of third-party JS and ~1500 ms of TBT — PageSpeed flags it
+           every time. We defer the actual script-tag injection to:
+             - requestIdleCallback (10s timeout), OR
+             - first user interaction (mouseenter / touchstart / scroll / keydown), OR
+             - 6s setTimeout fallback for older Safari (no rIC support).
+           dataLayer + gtm.start push run synchronously here so any code
+           that fires gtag / dataLayer.push() before GTM loads still
+           queues correctly — GTM consumes the queue once it boots.
+         When the domain is on Cloudflare proxy: migrate to Zaraz
+         (free tier covers 100k events/month, edge-side, zero browser JS).
+         See .claude/skills/performance.md "Section 3 — Zaraz migration".
+    ──────────────────────────────────────────────────────────────────── -->
+    {cfg.gtmId && (
+      <script is:inline define:vars={{ _gtmId: cfg.gtmId }}>
+        // Push gtm.start sync so any early dataLayer.push() ordering is preserved.
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+
+        var loaded = false;
+        function loadGtm() {
+          if (loaded) return;
+          loaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src   = 'https://www.googletagmanager.com/gtm.js?id=' + _gtmId;
+          (document.head || document.body).appendChild(s);
+        }
+
+        // Triggers — first one to fire wins.
+        var INTERACTION_EVENTS = ['mouseenter', 'touchstart', 'scroll', 'keydown'];
+        function onInteraction() {
+          loadGtm();
+          INTERACTION_EVENTS.forEach(function (ev) {
+            window.removeEventListener(ev, onInteraction, { passive: true });
+          });
+        }
+        INTERACTION_EVENTS.forEach(function (ev) {
+          window.addEventListener(ev, onInteraction, { passive: true });
+        });
+
+        if ('requestIdleCallback' in window) {
+          // Modern browsers — load when the main thread is idle, hard cap 10s.
+          window.requestIdleCallback(loadGtm, { timeout: 10000 });
+        } else {
+          // Safari fallback — older Safari has no requestIdleCallback.
+          window.setTimeout(loadGtm, 6000);
+        }
+      </script>
+    )}
+
+    <!-- ── gtag.js direct mode — only loads when GTM is NOT used.
+         If both gtmId and gtagId are set, GTM wins and handles GA4 inside
+         its container. If only gtagId is set, we load gtag.js here directly.
+         Ads Conversion ID (if set) is configured in the same gtag block.   -->
+    {!cfg.gtmId && cfg.gtagId && (
+      <>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${cfg.gtagId}`}></script>
+        <script is:inline define:vars={{ _gtagId: cfg.gtagId, _adsId: cfg.adsConversionId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', _gtagId);
+          if (_adsId) {
+            gtag('config', _adsId);
+          }
+        </script>
+      </>
+    )}
+
+    <!-- ── Google Ads Conversion ID exposed to GTM container.
+         If GTM is in use, Ads Conversion ID can also be configured inside
+         the GTM container. We expose it here as a window-level variable so
+         GTM container tags can read it without hardcoding the AW-… ID. -->
+    {cfg.gtmId && cfg.adsConversionId && (
+      <script is:inline define:vars={{ _adsId: cfg.adsConversionId }}>
+        window.HMDG_ADS_CONVERSION_ID = _adsId;
+      </script>
+    )}
+
+    <!-- ── Security headers ───────────────────────────────────────────
+         X-Frame-Options, X-Content-Type-Options, Permissions-Policy, and
+         Referrer-Policy can ONLY be set as HTTP headers — browsers ignore
+         and log errors when set via <meta>. These are handled by:
+           - public/_headers  (Netlify)
+           - vercel.json      (Vercel)
+
+         Content-Security-Policy is the one exception — it IS supported
+         as a <meta> tag and provides a browser-enforced fallback when
+         HTTP headers are unavailable (e.g. local dev without Wrangler).
+    ──────────────────────────────────────────────────────────────────── -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://www.google.com https://www.gstatic.com;
+      style-src 'self' 'unsafe-inline';
+      font-src 'self';
+      img-src 'self' data: https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://*.googleapis.com;
+      media-src 'self';
+      frame-src 'self' https://www.google.com https://*.cliniko.com;
+      connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://api.web3forms.com https://www.google.com;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      upgrade-insecure-requests;
+    " />
+  </head>
+  <body class="bg-white text-slate-600 antialiased">
+
+    <!-- ── Header ────────────────────────────────────── -->
+    <Header />
+
+    <!-- ── Page Content ──────────────────────────────────── -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- ── Global Google Reviews carousel (pre-footer trust signal) ───
+         Trustindex-style premium pattern. Native Astro carousel,
+         dynamic JSON-LD schema, free in production. Data lives in
+         src/data/reviews.ts; see .claude/skills/googlereviews-carousel.md
+         for full pattern documentation + customisation guide. -->
+    <ReviewsSection />
+
+    <!-- ── Footer ────────────────────────────────────── -->
+    <Footer />
+
+    <!-- ── Cookie Consent Manager ──────────────────────────────── -->
+    <CookieConsent />
+
+    <!-- ── GTM noscript fallback ─────────────────────────────────────
+         style="display:none;visibility:hidden" is required by Google's
+         official GTM noscript snippet and cannot be removed.
+         This is the only permitted inline style in the codebase.
+    ──────────────────────────────────────────────────────────────── -->
+    {cfg.gtmId && (
+      <noscript>
+        <iframe
+          src={`https://www.googletagmanager.com/ns.html?id=${cfg.gtmId}`}
+          height="0"
+          width="0"
+          style="display:none;visibility:hidden"
+        />
+      </noscript>
+    )}
+
+  </body>
+</html>

@@ -1,0 +1,68 @@
+/*
+  # ── Security Headers ─────────────────────────────────────────────
+  # Applied globally to every route on Cloudflare Pages.
+  # Adjust the CSP directives if you add new third-party services.
+
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # ── Content Security Policy ───────────────────────────────────────
+  # Allows: self, Google Fonts, Google Analytics, Google Maps, Cliniko
+  # Update script-src / frame-src if you add other services.
+
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://*.googleapis.com; media-src 'self'; frame-src 'self' https://www.google.com https://*.cliniko.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://api.web3forms.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;
+
+# ── Cache-Control — static asset caching ─────────────────────────
+# Astro fingerprints all built JS/CSS with content hashes in /_astro/.
+# immutable = browser never revalidates these files.
+# Cloudflare Pages auto-purges its edge cache on every deploy, so the
+# 1-year cache windows below are safe even for content-unhashed paths
+# like /images/ — a republish triggers a global purge automatically.
+# HTML pages must never be cached long-term (they may be republished).
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=31536000, stale-while-revalidate=86400
+
+/videos/*
+  Cache-Control: public, max-age=31536000, stale-while-revalidate=86400
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/icons/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=604800
+
+/*.ico
+  Cache-Control: public, max-age=604800
+
+# ── Noindex protection for thank-you / credit pages ───────────
+# HTTP-level X-Robots-Tag complements <meta name="robots"> in BaseLayout.
+# Defence in depth — some crawlers ignore meta but respect HTTP headers.
+# Applies to all /thank-you* routes regardless of trailing slash.
+
+/thank-you
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you/
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you-booking
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you-booking/
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you-hmdg
+  X-Robots-Tag: noindex, nofollow
+
+/thank-you-hmdg/
+  X-Robots-Tag: noindex, nofollow

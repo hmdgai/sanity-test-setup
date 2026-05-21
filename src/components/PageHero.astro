@@ -1,0 +1,128 @@
+---
+/**
+ * PageHero.astro
+ * ─────────────────────────────────────────────────────
+ * Secondary-page hero — used on every non-homepage route
+ * (Contact, About, Services, etc.).
+ *
+ * Smaller than the homepage <Hero />: content-driven height
+ * with a min-height floor (no full-viewport stretch). Carries
+ * a single H1, an eyebrow, and an optional intro paragraph.
+ *
+ * To enable LCP preload, also pass the same image path to
+ * BaseLayout via heroImage="/images/contact-hero.webp".
+ *
+ * Per-page customisation:
+ *   - image       Path to .webp hero background
+ *   - imageAlt    Alt text (empty if purely decorative)
+ *   - eyebrow     Small uppercase label above the H1
+ *   - headline    H1 text. Use <em>word</em> for an italic accent.
+ *   - intro       Optional supporting paragraph below the H1
+ */
+
+interface Props {
+  image: string;
+  imageAlt?: string;
+  eyebrow?: string;
+  headline: string;
+  intro?: string;
+}
+
+const {
+  image,
+  imageAlt = '',
+  eyebrow,
+  headline,
+  intro,
+} = Astro.props;
+---
+
+<section class="page-hero relative isolate overflow-hidden bg-[--color-hero-dark]">
+
+  <img
+    src={image}
+    alt={imageAlt}
+    class="page-hero-img absolute inset-0 w-full h-full object-cover object-center"
+    loading="eager"
+    decoding="async"
+    fetchpriority="high"
+    width="1920"
+    height="800"
+    aria-hidden={imageAlt ? undefined : 'true'}
+  />
+
+  <div class="page-hero-overlay absolute inset-0" aria-hidden="true"></div>
+
+  <div class="container-main relative z-10">
+    <div class="page-hero-content">
+      {eyebrow && <span class="eyebrow page-hero-eyebrow">{eyebrow}</span>}
+      <h1 class="page-hero-h1 text-white" set:html={headline} />
+      {intro && <p class="page-hero-intro">{intro}</p>}
+    </div>
+  </div>
+
+</section>
+
+<style>
+  .page-hero {
+    padding-top:    7rem;
+    padding-bottom: 5rem;
+    min-height:     22rem;
+  }
+
+  @media (min-width: 768px) {
+    .page-hero {
+      padding-top:    9rem;
+      padding-bottom: 7rem;
+      min-height:     28rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .page-hero {
+      padding-top:    11rem;
+      padding-bottom: 8rem;
+      min-height:     32rem;
+    }
+  }
+
+  .page-hero-overlay {
+    background:
+      linear-gradient(
+        to top,
+        rgb(10 15 26 / 0.85) 0%,
+        rgb(10 15 26 / 0.55) 55%,
+        rgb(10 15 26 / 0.35) 100%
+      );
+  }
+
+  .page-hero-content {
+    max-width: 44rem;
+  }
+
+  .page-hero-eyebrow {
+    color:        rgb(255 255 255 / 0.7);
+    margin-bottom: 1rem;
+  }
+
+  .page-hero-h1 {
+    margin: 0;
+    color:  #ffffff;
+  }
+
+  /* .heading-accent used instead of <em> — <em> carries semantic stress
+     emphasis that some screen readers announce aloud. The italic colour
+     accent here is purely decorative so a neutral <span> is correct. */
+  .page-hero-h1 :global(.heading-accent) {
+    font-style: italic;
+    color:      var(--color-primary);
+  }
+
+  .page-hero-intro {
+    margin:      1.25rem 0 0;
+    color:       rgb(255 255 255 / 0.72);
+    font-size:   var(--text-lg);
+    line-height: 1.6;
+    max-width:   34rem;
+  }
+</style>

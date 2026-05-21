@@ -1,0 +1,466 @@
+---
+/**
+ * ReviewsSection.astro
+ * ─────────────────────────────────────────────────────
+ * Premium Google Reviews carousel — global pre-footer trust section.
+ * Used once via BaseLayout.astro between BookingSection and Footer.
+ *
+ * Built around CSS scroll-snap (native, lightweight, touch-friendly).
+ * No Swiper, no heavy carousel library — just ~30 lines of progressive
+ * enhancement JS for the prev/next arrow buttons. Swipe works without
+ * JS too.
+ *
+ * Data lives in src/data/reviews.ts. To enable live Google Places API
+ * integration, follow the comments in that file.
+ */
+import { reviews, reviewsMeta, getInitials } from '../data/reviews.ts';
+
+// ── JSON-LD structured data ─────────────────────────────────
+// Built from the same `reviews` + `reviewsMeta` that render the
+// visible HTML, so the schema is always in sync with the page.
+// LocalBusiness pattern with AggregateRating + Review[] is the
+// schema.org standard for business reviews. Self-serving local-
+// business review stars are usually suppressed by Google in SERP
+// (2019 policy) but the schema is still valuable for AI search
+// engines, Schema.org-aware crawlers, and future-proofing.
+const siteName  = import.meta.env.PUBLIC_SITE_NAME || 'Cheltenham Physio and Chiro';
+const siteUrl   = Astro.site?.href ?? 'https://cheltenhamphysio.co.uk';
+const reviewsLd = {
+  '@context': 'https://schema.org',
+  '@type':    'LocalBusiness',
+  '@id':      `${siteUrl.replace(/\/$/, '')}/#localbusiness`,
+  name:       siteName,
+  url:        siteUrl,
+  aggregateRating: {
+    '@type':      'AggregateRating',
+    ratingValue:  Number(reviewsMeta.averageRating.toFixed(1)),
+    reviewCount:  reviewsMeta.totalReviews,
+    bestRating:   5,
+    worstRating:  1,
+  },
+  review: reviews.map(r => ({
+    '@type': 'Review',
+    author: { '@type': 'Person', name: r.name },
+    reviewRating: {
+      '@type':     'Rating',
+      ratingValue: r.rating,
+      bestRating:  5,
+      worstRating: 1,
+    },
+    datePublished: r.date,
+    reviewBody:    r.text,
+  })),
+};
+---
+
+<section class="reviews-section" aria-labelledby="reviews-headline">
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(reviewsLd)} />
+
+  <div class="container-main">
+
+    <div class="reviews-head">
+      <h2 id="reviews-headline" class="reviews-headline">
+        Trusted by Cheltenham Patients on <em>Google</em>
+      </h2>
+      <p class="reviews-subline">
+        <span class="reviews-stars-row" aria-hidden="true">
+          {Array.from({ length: 5 }).map(() => (
+            <svg class="reviews-star" width="14" height="14" viewBox="0 0 14 14" fill="currentColor" focusable="false">
+              <path d="M7 1.5l1.7 3.5 3.8.6-2.7 2.7.7 3.8L7 10.3l-3.5 1.8.7-3.8L1.5 5.6l3.8-.6L7 1.5z" />
+            </svg>
+          ))}
+        </span>
+        <span><strong>{reviewsMeta.averageRating.toFixed(1)}</strong> average rating · {reviewsMeta.totalReviewsDisplay} verified reviews on Google</span>
+      </p>
+    </div>
+
+    <div class="reviews-carousel">
+      <div class="reviews-track" data-reviews-track tabindex="0" role="region" aria-label="Patient reviews carousel">
+        {reviews.map(review => (
+          <article class="review-card">
+            <div class="review-stars" aria-label={`Rated ${review.rating} out of 5 stars`}>
+              {Array.from({ length: review.rating }).map(() => (
+                <svg class="review-star" width="18" height="18" viewBox="0 0 18 18" fill="currentColor" focusable="false" aria-hidden="true">
+                  <path d="M9 2l2.2 4.5 4.9.7-3.5 3.5.8 4.9L9 13.3l-4.4 2.3.8-4.9L1.9 7.2l4.9-.7L9 2z" />
+                </svg>
+              ))}
+            </div>
+
+            <p class="review-text">{review.text}</p>
+
+            <div class="review-divider" aria-hidden="true"></div>
+
+            <div class="review-author">
+              <span class="review-avatar" aria-hidden="true">{getInitials(review.name)}</span>
+              <div class="review-meta">
+                <span class="review-name">{review.name}</span>
+                <span class="review-time">
+                  <span class="review-time-part">{review.relativeTime}</span>
+                  <span class="review-source-sep" aria-hidden="true"></span>
+                  <span class="review-time-part">via Google</span>
+                </span>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="reviews-controls">
+        <a
+          href={reviewsMeta.mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="reviews-link"
+          aria-label="See all reviews on Google — opens in a new tab"
+        >
+          See All Reviews on Google
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">
+            <line x1="3" y1="11" x2="11" y2="3" />
+            <polyline points="5 3 11 3 11 9" />
+          </svg>
+        </a>
+
+        <div class="reviews-arrows">
+          <button type="button" class="arrow-btn reviews-arrow" data-reviews-prev aria-label="Previous review">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+              <polyline points="9 2 3 7 9 12" />
+            </svg>
+          </button>
+          <button type="button" class="arrow-btn reviews-arrow" data-reviews-next aria-label="Next review">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+              <polyline points="5 2 11 7 5 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* ── Lightweight carousel control ──────────────────────────────
+     Uses CSS scroll-snap (the carousel works WITHOUT this JS via
+     touch/mouse swipe). This script adds keyboard + button control.
+     Lazy-attaches when section enters viewport so we don't pay a JS
+     cost for visitors who never scroll to the footer area. */
+
+  const initReviewsCarousel = () => {
+    const track = document.querySelector<HTMLElement>('[data-reviews-track]');
+    const prev  = document.querySelector<HTMLButtonElement>('[data-reviews-prev]');
+    const next  = document.querySelector<HTMLButtonElement>('[data-reviews-next]');
+    if (!track || !prev || !next) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const getStep = () => {
+      const card = track.querySelector<HTMLElement>('.review-card');
+      if (!card) return 0;
+      const cardWidth = card.offsetWidth;
+      const styles = window.getComputedStyle(track);
+      const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+      return cardWidth + gap;
+    };
+
+    const scroll = (direction: 1 | -1) => {
+      const step = getStep();
+      track.scrollBy({
+        left:     direction * step,
+        behavior: reduceMotion ? 'auto' : 'smooth',
+      });
+    };
+
+    prev.addEventListener('click', () => scroll(-1));
+    next.addEventListener('click', () => scroll(1));
+
+    // Update arrow disabled state at scroll edges
+    const updateEdges = () => {
+      const max = track.scrollWidth - track.clientWidth - 1;
+      prev.disabled = track.scrollLeft <= 1;
+      next.disabled = track.scrollLeft >= max;
+    };
+    track.addEventListener('scroll', updateEdges, { passive: true });
+    window.addEventListener('resize', updateEdges, { passive: true });
+    updateEdges();
+  };
+
+  // Defer init until the section is near the viewport — saves JS work
+  // for users who never scroll to the footer area. IO-unsupported
+  // browsers fall back to immediate init.
+  const reviewsSection = document.querySelector<HTMLElement>('.reviews-section');
+  if (reviewsSection && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries, observer) => {
+      if (entries.some(e => e.isIntersecting)) {
+        initReviewsCarousel();
+        observer.disconnect();
+      }
+    }, { rootMargin: '300px 0px' });
+    io.observe(reviewsSection);
+  } else {
+    initReviewsCarousel();
+  }
+</script>
+
+<style>
+  /* ============================================================
+     REVIEWS — premium Google reviews carousel (global)
+     ============================================================ */
+  .reviews-section {
+    padding: var(--spacing-section-y) 0;
+    background: var(--color-accent);
+    overflow-x: hidden;
+  }
+  @media (min-width: 1200px) {
+    .reviews-section { padding: var(--spacing-section-y-lg) 0; }
+  }
+
+  /* ── Section head: H2 + trust sub-line ──────────────────────── */
+  .reviews-head {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 3.75rem;
+    max-width: 56rem;
+  }
+  .reviews-headline {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(2.5rem, 4.8vw, 4.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.018em;
+    color: var(--color-headline);
+    text-wrap: balance;
+  }
+  .reviews-headline em { font-style: italic; color: var(--color-primary); }
+
+  .reviews-subline {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-body);
+  }
+  .reviews-subline strong {
+    color: var(--color-headline);
+    font-weight: 600;
+  }
+  .reviews-stars-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1875rem;
+    color: var(--color-mint-green);
+  }
+  .reviews-star { display: block; }
+
+  /* ── Carousel — CSS scroll-snap track, native swipe ─────────── */
+  .reviews-carousel {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .reviews-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc(100% - 2rem);
+    gap: 1.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.5rem;
+    /* Slight outer padding so first/last cards don't kiss container edges
+       when scroll lands at start/end */
+    scroll-padding-left: 0;
+  }
+  .reviews-track::-webkit-scrollbar { display: none; }
+  .reviews-track:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+  @media (min-width: 600px) {
+    .reviews-track { grid-auto-columns: calc(50% - 0.75rem); }
+  }
+  @media (min-width: 960px) {
+    .reviews-track { grid-auto-columns: calc(33.333% - 1rem); }
+  }
+
+  /* ── Review card ─────────────────────────────────────────────── */
+  .review-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2rem;
+    border-radius: 15px;
+    background: var(--color-white);
+    box-shadow: 0 1px 0 rgba(27, 46, 73, 0.04);
+    scroll-snap-align: start;
+    /* Equal heights via grid-auto-columns + content layout */
+    height: 100%;
+    min-height: 18rem;
+    transition: transform  0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+                box-shadow 0.4s ease;
+  }
+  .review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 30px 60px -30px rgba(27, 46, 73, 0.25),
+                0 1px 0 rgba(27, 46, 73, 0.06);
+  }
+
+  .review-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-mint-green);
+  }
+  .review-star { display: block; }
+
+  .review-text {
+    flex: 1;
+    margin: 0;
+    font-family: var(--font-body);
+    font-style: normal;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+    color: var(--color-headline);
+    text-wrap: pretty;
+  }
+
+  .review-divider {
+    height: 1px;
+    background: var(--rule-light, rgba(27, 46, 73, 0.12));
+  }
+
+  .review-author {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+  }
+  .review-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.625rem;
+    height: 2.625rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-mint-green) 22%, var(--color-muted));
+    color: var(--color-headline);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .review-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1875rem;
+    min-width: 0;
+  }
+  .review-name {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-headline);
+    letter-spacing: -0.005em;
+  }
+  .review-time {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.5rem;
+    row-gap: 0.125rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-body);
+    opacity: 0.65;
+  }
+  /* Each text part stays on one line; if it doesn't fit, flex-wrap
+     pushes it to a new row — never breaks mid-phrase like "3 WEEKS / AGO". */
+  .review-time-part {
+    white-space: nowrap;
+  }
+  .review-source-sep {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  /* Mobile: stack the two parts vertically and hide the separator dot.
+     Cleaner than wrapping with the dot floating mid-line on narrow cards. */
+  @media (max-width: 480px) {
+    .review-time {
+      flex-direction: column;
+      align-items: flex-start;
+      row-gap: 0.25rem;
+    }
+    .review-source-sep {
+      display: none;
+    }
+  }
+
+  /* ── Carousel controls — bottom row: link left, arrows right ── */
+  .reviews-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .reviews-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    text-decoration: none;
+    background-image: linear-gradient(to right, var(--color-primary), var(--color-primary));
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    padding-bottom: 3px;
+    transition: opacity 0.3s ease, gap 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .reviews-link:hover {
+    gap: 0.75rem;
+  }
+  .reviews-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  .reviews-arrows {
+    display: inline-flex;
+    gap: 0.625rem;
+  }
+  .reviews-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* ── Reduced motion ──────────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .review-card,
+    .reviews-link {
+      transition-duration: 0.01s !important;
+      transform: none !important;
+    }
+    .reviews-track { scroll-behavior: auto; }
+  }
+</style>

@@ -1,0 +1,1529 @@
+---
+/**
+ * cookie-policy.astro
+ * ─────────────────────────────────────────────────────────
+ * Premium two-column legal page — Cookie Policy.
+ * Scroll progress bar · IntersectionObserver active sidebar ·
+ * Cookie tables · Compliance badges · Primary colour accents.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const sections = [
+  { id: "what-are-cookies",       label: "What Are Cookies",         num: "01" },
+  { id: "how-we-use-cookies",     label: "How We Use Cookies",       num: "02" },
+  { id: "types-of-cookies",       label: "Types of Cookies",         num: "03" },
+  { id: "essential-cookies",      label: "Essential Cookies",        num: "04" },
+  { id: "analytics-cookies",      label: "Analytics Cookies",        num: "05" },
+  { id: "marketing-cookies",      label: "Marketing Cookies",        num: "06" },
+  { id: "third-party-cookies",    label: "Third-Party Cookies",      num: "07" },
+  { id: "consent-management",     label: "Consent Management",       num: "08" },
+  { id: "managing-cookies",       label: "Managing Cookies",         num: "09" },
+  { id: "contact",                label: "Contact",                  num: "10" },
+];
+---
+
+<BaseLayout
+  title="Cookie Policy — ClinicName"
+  description="Cookie Policy for ClinicName. Learn how we use cookies and tracking technologies on our website."
+>
+
+  <!-- ── Scroll progress bar ───────────────────────────────── -->
+  <div class="cp-progress" aria-hidden="true" id="cp-progress"></div>
+
+  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <section class="cp-hero">
+    <img
+      src="/images/cookiepolicy.webp"
+      alt=""
+      class="cp-hero-img"
+      aria-hidden="true"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      width="1600"
+      height="900"
+    />
+    <div class="cp-hero-overlay" aria-hidden="true"></div>
+    <div class="container-main cp-hero-content">
+      <div class="container-inner">
+        <span class="eyebrow">Legal</span>
+        <h1 class="cp-hero-h1">Cookie Policy</h1>
+        <div class="cp-meta">
+          <span class="cp-meta-date">Last updated: 9 March 2026</span>
+          <p class="cp-meta-intro">
+            This policy explains how ClinicName uses cookies and similar tracking
+            technologies on our website, and how you can manage your preferences.
+          </p>
+          <!-- Compliance badges -->
+          <div class="cp-badges">
+            <span class="cp-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              UK GDPR Compliant
+            </span>
+            <span class="cp-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              PECR Compliant
+            </span>
+            <span class="cp-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Healthcare / Clinic
+            </span>
+          </div>
+        </div>
+        <!-- Mobile section pills -->
+        <nav class="cp-mobile-nav" aria-label="Jump to section">
+          {sections.map(s => (
+            <a href={`#${s.id}`} class="cp-mobile-pill">{s.label}</a>
+          ))}
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Two-column layout ─────────────────────────────────── -->
+  <section class="cp-body">
+    <div class="container-main">
+      <div class="cp-layout">
+
+        <!-- ── Sticky sidebar ──────────────────────────── -->
+        <aside class="cp-sidebar" aria-label="Policy sections">
+          <div class="cp-sidebar-inner">
+
+            <div class="cp-sidebar-header">
+              <span class="cp-sidebar-title">On this page</span>
+              <span class="cp-sidebar-count">{sections.length} sections</span>
+            </div>
+
+            <nav>
+              <ul class="cp-nav-list">
+                {sections.map(s => (
+                  <li>
+                    <a
+                      href={`#${s.id}`}
+                      class="cp-nav-link"
+                      data-nav={s.id}
+                    >
+                      <span class="cp-nav-num">{s.num}</span>
+                      <span class="cp-nav-label">{s.label}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div class="cp-sidebar-card">
+              <div class="cp-sidebar-card-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+              <p class="cp-sidebar-card-text">Need help managing your cookie preferences?</p>
+              <a href="/contact" class="cp-sidebar-cta">Contact us →</a>
+            </div>
+
+          </div>
+        </aside>
+
+        <!-- ── Policy content ──────────────────────────── -->
+        <div class="cp-content">
+
+          <p class="cp-lead">
+            We use cookies and similar technologies on our website to improve your
+            browsing experience, analyse site traffic, and support our marketing
+            activities. This policy explains what cookies are, how we use them, and
+            the choices available to you. By continuing to use our website you consent
+            to our use of cookies in accordance with this policy.
+          </p>
+
+          <!-- 01 What are cookies -->
+          <article id="what-are-cookies" class="cp-section">
+            <div class="cp-section-header">
+              <span class="cp-section-num">01</span>
+              <h2>What are cookies?</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>
+                Cookies are small text files that are placed on your computer, smartphone,
+                or other device when you visit a website. They are widely used to make
+                websites work more efficiently and to provide information to the website
+                owner.
+              </p>
+              <p>
+                Cookies allow websites to remember your actions and preferences (such as
+                login details, language, font size, and other display preferences) over a
+                period of time, so you do not have to re-enter these every time you visit
+                or browse from page to page.
+              </p>
+
+              <h3>Session vs Persistent cookies</h3>
+              <p>
+                <strong>Session cookies</strong> are temporary and are deleted from your
+                device when you close your browser. <strong>Persistent cookies</strong>
+                remain on your device for a set period or until you delete them manually.
+                We use both types depending on the purpose.
+              </p>
+
+              <h3>First-party vs Third-party cookies</h3>
+              <p>
+                <strong>First-party cookies</strong> are set directly by our website.
+                <strong>Third-party cookies</strong> are set by external services we use,
+                such as Google Analytics or booking software. These third parties have
+                their own privacy policies which we link to where relevant.
+              </p>
+            </div>
+          </article>
+
+          <!-- 02 How we use cookies -->
+          <article id="how-we-use-cookies" class="cp-section">
+            <div class="cp-section-header">
+              <span class="cp-section-num">02</span>
+              <h2>How we use cookies</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>We use cookies for the following purposes:</p>
+              <ul>
+                <li>To ensure our website functions correctly and securely.</li>
+                <li>To remember your preferences and settings between visits.</li>
+                <li>To understand how visitors use our website so we can improve it.</li>
+                <li>To measure the effectiveness of our marketing campaigns.</li>
+                <li>To provide relevant content and personalise your experience.</li>
+                <li>To enable our booking and appointment system to operate.</li>
+                <li>To comply with our legal and regulatory obligations.</li>
+              </ul>
+              <div class="cp-notice">
+                <p>
+                  As a healthcare provider, we take the privacy of your data very seriously.
+                  We do not use cookies to collect sensitive health information. Any
+                  information gathered via cookies relates solely to your website browsing
+                  behaviour and general usage patterns.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 03 Types of cookies -->
+          <article id="types-of-cookies" class="cp-section">
+            <div class="cp-section-header">
+              <span class="cp-section-num">03</span>
+              <h2>Types of cookies we use</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>
+                The cookies we use fall into four main categories. The table below
+                provides an overview of each category and how we use them.
+              </p>
+              <div class="cp-table-wrap">
+                <table class="cp-table">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>Purpose</th>
+                      <th>Required</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Essential</strong></td>
+                      <td>Required for the website to function. Cannot be disabled.</td>
+                      <td><span class="cp-tag cp-tag--yes">Always on</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Analytics</strong></td>
+                      <td>Help us understand how visitors interact with our website.</td>
+                      <td><span class="cp-tag cp-tag--opt">Optional</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Marketing</strong></td>
+                      <td>Used to track visits and deliver relevant advertising.</td>
+                      <td><span class="cp-tag cp-tag--opt">Optional</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Preferences</strong></td>
+                      <td>Remember your settings and choices across visits.</td>
+                      <td><span class="cp-tag cp-tag--opt">Optional</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <!-- 04 Essential cookies -->
+          <article id="essential-cookies" class="cp-section">
+            <div class="cp-section-header">
+              <span class="cp-section-num">04</span>
+              <h2>Essential cookies</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>
+                Essential cookies are strictly necessary for our website to function.
+                They do not require your consent under PECR and cannot be turned off.
+                They are usually set in response to actions you take, such as setting
+                your privacy preferences, logging in, or filling in forms.
+              </p>
+              <div class="cp-table-wrap">
+                <table class="cp-table">
+                  <thead>
+                    <tr>
+                      <th>Cookie Name</th>
+                      <th>Provider</th>
+                      <th>Purpose</th>
+                      <th>Expiry</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>cookieconsent_status</code></td>
+                      <td>ClinicName</td>
+                      <td>Stores your cookie consent preference.</td>
+                      <td>1 year</td>
+                    </tr>
+                    <tr>
+                      <td><code>PHPSESSID</code></td>
+                      <td>ClinicName</td>
+                      <td>Maintains your session while you navigate the site.</td>
+                      <td>Session</td>
+                    </tr>
+                    <tr>
+                      <td><code>csrf_token</code></td>
+                      <td>ClinicName</td>
+                      <td>Protects forms against cross-site request forgery attacks.</td>
+                      <td>Session</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <!-- 05 Analytics cookies -->
+          <article id="analytics-cookies" class="cp-section">
+            <div class="cp-section-header">
+              <span class="cp-section-num">05</span>
+              <h2>Analytics cookies</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>
+                Analytics cookies help us understand how visitors use our website.
+                We use this information to improve our site and provide a better
+                experience. All data collected is aggregated and anonymised — we
+                cannot identify you personally from this data.
+              </p>
+              <p>
+                We use <strong>Google Analytics 4 (GA4)</strong> with IP anonymisation
+                enabled. We have also implemented <strong>Google Consent Mode v2</strong>
+                to ensure data is only collected in line with your preferences.
+              </p>
+
+              <h3>Google Consent Mode v2 configuration</h3>
+              <div class="cp-config-grid">
+                <div class="cp-config-item">
+                  <span class="cp-config-key"><code>analytics_storage</code></span>
+                  <span class="cp-config-val">Requires consent</span>
+                </div>
+                <div class="cp-config-item">
+                  <span class="cp-config-key"><code>ad_storage</code></span>
+                  <span class="cp-config-val">Requires consent</span>
+                </div>
+                <div class="cp-config-item">
+                  <span class="cp-config-key"><code>ad_user_data</code></span>
+                  <span class="cp-config-val">Requires consent</span>
+                </div>
+                <div class="cp-config-item">
+                  <span class="cp-config-key"><code>ad_personalization</code></span>
+                  <span class="cp-config-val">Requires consent</span>
+                </div>
+              </div>
+
+              <div class="cp-table-wrap">
+                <table class="cp-table">
+                  <thead>
+                    <tr>
+                      <th>Cookie Name</th>
+                      <th>Provider</th>
+                      <th>Purpose</th>
+                      <th>Expiry</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>_ga</code></td>
+                      <td>Google Analytics</td>
+                      <td>Distinguishes unique users. Used to calculate visitor, session, and campaign data.</td>
+                      <td>2 years</td>
+                    </tr>
+                    <tr>
+                      <td><code>_ga_XXXXXXXX</code></td>
+                      <td>Google Analytics</td>
+                      <td>Stores session state for GA4 measurement.</td>
+                      <td>2 years</td>
+                    </tr>
+                    <tr>
+                      <td><code>_gid</code></td>
+                      <td>Google Analytics</td>
+                      <td>Distinguishes users. Registers a unique ID for a session.</td>
+                      <td>24 hours</td>
+                    </tr>
+                    <tr>
+                      <td><code>_gat</code></td>
+                      <td>Google Analytics</td>
+                      <td>Used to throttle request rate (limits data collection on high-traffic sites).</td>
+                      <td>1 minute</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>
+                You can opt out of Google Analytics tracking at any time by visiting
+                <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">tools.google.com/dlpage/gaoptout</a>
+                or by adjusting your cookie preferences through our consent banner.
+              </p>
+            </div>
+          </article>
+
+          <!-- 06 Marketing cookies -->
+          <article id="marketing-cookies" class="cp-section">
+            <div class="cp-section-header">
+              <span class="cp-section-num">06</span>
+              <h2>Marketing cookies</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>
+                Marketing cookies are used to track visitors across websites and to
+                display adverts that are relevant and engaging to individual users.
+                We may use these cookies in connection with digital advertising
+                campaigns aimed at promoting our clinic's services.
+              </p>
+              <div class="cp-table-wrap">
+                <table class="cp-table">
+                  <thead>
+                    <tr>
+                      <th>Cookie Name</th>
+                      <th>Provider</th>
+                      <th>Purpose</th>
+                      <th>Expiry</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>_gcl_au</code></td>
+                      <td>Google Ads</td>
+                      <td>Used by Google AdSense to experiment with advertisement efficiency across websites.</td>
+                      <td>3 months</td>
+                    </tr>
+                    <tr>
+                      <td><code>_fbp</code></td>
+                      <td>Meta (Facebook)</td>
+                      <td>Used by Meta to deliver advertising across their network.</td>
+                      <td>3 months</td>
+                    </tr>
+                    <tr>
+                      <td><code>fr</code></td>
+                      <td>Meta (Facebook)</td>
+                      <td>Used to deliver, measure, and improve the relevance of ads.</td>
+                      <td>3 months</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="cp-notice">
+                <p>
+                  Marketing cookies are only placed on your device if you have provided
+                  explicit consent through our cookie consent banner. You may withdraw
+                  this consent at any time by adjusting your preferences in the banner
+                  or by following the browser instructions in section 09.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 07 Third-party cookies -->
+          <article id="third-party-cookies" class="cp-section">
+            <div class="cp-section-header">
+              <span class="cp-section-num">07</span>
+              <h2>Third-party cookies</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>
+                Some cookies on our website are set by third-party services we use to
+                support our clinic operations and online presence. These third parties
+                have their own privacy and cookie policies.
+              </p>
+
+              <div class="cp-third-party-list">
+
+                <div class="cp-tp-card">
+                  <div class="cp-tp-card-header">
+                    <span class="cp-tp-name">Google LLC</span>
+                    <span class="cp-tag cp-tag--opt">Analytics &amp; Ads</span>
+                  </div>
+                  <p class="cp-tp-desc">
+                    We use Google Analytics and Google Ads to understand website usage
+                    and run advertising campaigns. Google is certified under the EU-US
+                    Data Privacy Framework.
+                  </p>
+                  <a
+                    href="https://policies.google.com/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="cp-tp-link"
+                  >
+                    View Google Privacy Policy →
+                  </a>
+                </div>
+
+                <div class="cp-tp-card">
+                  <div class="cp-tp-card-header">
+                    <span class="cp-tp-name">Cliniko</span>
+                    <span class="cp-tag cp-tag--opt">Booking System</span>
+                  </div>
+                  <p class="cp-tp-desc">
+                    We use Cliniko as our practice management and online booking system.
+                    When you interact with a booking widget, Cliniko may set its own
+                    cookies to manage the booking session.
+                  </p>
+                  <a
+                    href="https://www.cliniko.com/policies/privacy/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="cp-tp-link"
+                  >
+                    View Cliniko Privacy Policy →
+                  </a>
+                </div>
+
+              </div>
+            </div>
+          </article>
+
+          <!-- 08 Consent management -->
+          <article id="consent-management" class="cp-section">
+            <div class="cp-section-header">
+              <span class="cp-section-num">08</span>
+              <h2>Consent management</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>
+                When you first visit our website, you will be shown a cookie consent
+                banner. This banner gives you clear control over which categories of
+                cookies you accept, in line with our obligations under PECR and the
+                UK GDPR.
+              </p>
+
+              <h3>What your choices mean</h3>
+              <ul>
+                <li><strong>Accept all</strong> — you consent to all cookie categories including analytics and marketing.</li>
+                <li><strong>Reject non-essential</strong> — only essential cookies will be set. No analytics or marketing data will be collected.</li>
+                <li><strong>Customise</strong> — you can choose which categories to enable or disable independently.</li>
+              </ul>
+
+              <h3>Withdrawing consent</h3>
+              <p>
+                You may change or withdraw your consent at any time. Your preferences
+                are stored in a first-party cookie. To reset your preferences, clear
+                your browser cookies or contact us and we will assist you.
+              </p>
+
+              <div class="cp-highlight">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <p>
+                  We will never use your withdrawn consent as a reason to reduce the
+                  quality of service we provide to you. Refusing non-essential cookies
+                  will not affect your ability to book appointments or access our
+                  clinical services.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 09 Managing cookies -->
+          <article id="managing-cookies" class="cp-section">
+            <div class="cp-section-header">
+              <span class="cp-section-num">09</span>
+              <h2>Managing cookies in your browser</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>
+                In addition to our consent banner, you can control and delete cookies
+                through your browser settings. Most browsers allow you to refuse new
+                cookies, delete existing cookies, and be notified when cookies are set.
+                Note that disabling cookies may affect the functionality of some parts
+                of our website.
+              </p>
+
+              <h3>Browser cookie settings</h3>
+              <div class="cp-browser-list">
+                <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" class="cp-browser-item">
+                  <span class="cp-browser-name">Google Chrome</span>
+                  <span class="cp-browser-arrow">→</span>
+                </a>
+                <a href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop" target="_blank" rel="noopener noreferrer" class="cp-browser-item">
+                  <span class="cp-browser-name">Mozilla Firefox</span>
+                  <span class="cp-browser-arrow">→</span>
+                </a>
+                <a href="https://support.apple.com/en-gb/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer" class="cp-browser-item">
+                  <span class="cp-browser-name">Safari (Mac)</span>
+                  <span class="cp-browser-arrow">→</span>
+                </a>
+                <a href="https://support.apple.com/en-gb/HT201265" target="_blank" rel="noopener noreferrer" class="cp-browser-item">
+                  <span class="cp-browser-name">Safari (iOS)</span>
+                  <span class="cp-browser-arrow">→</span>
+                </a>
+                <a href="https://support.microsoft.com/en-us/windows/microsoft-edge-browsing-data-and-privacy-bb8174ba-9d73-dcf2-9b4a-c582b4e640dd" target="_blank" rel="noopener noreferrer" class="cp-browser-item">
+                  <span class="cp-browser-name">Microsoft Edge</span>
+                  <span class="cp-browser-arrow">→</span>
+                </a>
+                <a href="https://help.opera.com/en/latest/web-preferences/#cookies" target="_blank" rel="noopener noreferrer" class="cp-browser-item">
+                  <span class="cp-browser-name">Opera</span>
+                  <span class="cp-browser-arrow">→</span>
+                </a>
+              </div>
+
+              <h3>Relevant legislation</h3>
+              <ul class="cp-legislation-list">
+                <li class="cp-leg-item">
+                  <span class="cp-leg-name">PECR</span>
+                  <span class="cp-leg-desc">The Privacy and Electronic Communications Regulations 2003 govern the use of cookies in the UK and require consent for non-essential cookies.</span>
+                </li>
+                <li class="cp-leg-item">
+                  <span class="cp-leg-name">UK GDPR</span>
+                  <span class="cp-leg-desc">The UK General Data Protection Regulation sets out the lawful basis for processing personal data, including data collected via cookies.</span>
+                </li>
+                <li class="cp-leg-item">
+                  <span class="cp-leg-name">DPA 2018</span>
+                  <span class="cp-leg-desc">The Data Protection Act 2018 supplements the UK GDPR and provides specific exemptions and derogations for the UK context.</span>
+                </li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- 10 Contact -->
+          <article id="contact" class="cp-section cp-section--last">
+            <div class="cp-section-header">
+              <span class="cp-section-num">10</span>
+              <h2>Contact us about cookies</h2>
+            </div>
+            <div class="cp-section-body">
+              <p>
+                If you have any questions about how we use cookies, or you wish to
+                exercise any of your rights in relation to cookie data, please contact
+                us. You also have the right to complain to the Information
+                Commissioner's Office (ICO) if you believe your data rights have not
+                been respected.
+              </p>
+
+              <div class="cp-ico-card">
+                <div class="cp-ico-row">
+                  <span class="cp-ico-label">Regulator</span>
+                  <span class="cp-ico-val">Information Commissioner's Office (ICO)</span>
+                </div>
+                <div class="cp-ico-row">
+                  <span class="cp-ico-label">Website</span>
+                  <span class="cp-ico-val">
+                    <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer">ico.org.uk</a>
+                  </span>
+                </div>
+                <div class="cp-ico-row">
+                  <span class="cp-ico-label">Helpline</span>
+                  <span class="cp-ico-val">0303 123 1113</span>
+                </div>
+              </div>
+
+              <a href="/contact" class="btn btn-default">Send Us a Message</a>
+
+              <div class="cp-page-footer">
+                <div class="cp-page-footer-badges">
+                  <span class="cp-footer-badge">UK GDPR Compliant</span>
+                  <span class="cp-footer-badge">PECR Compliant</span>
+                  <span class="cp-footer-badge">Healthcare / Clinic</span>
+                </div>
+                <p class="cp-page-footer-note">
+                  This Cookie Policy is reviewed at least annually. It was last updated
+                  on 9 March 2026. If you continue to use our website after changes have
+                  been made, you accept the updated policy.
+                </p>
+              </div>
+            </div>
+          </article>
+
+        </div><!-- end cp-content -->
+      </div><!-- end cp-layout -->
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ── Scroll progress bar ────────────────────────────────────── */
+  .cp-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: var(--cp-scroll, 0%);
+    background: var(--color-primary);
+    z-index: 9999;
+    transition: width 0.08s linear;
+    transform-origin: left;
+    pointer-events: none;
+  }
+
+  /* ── Hero ───────────────────────────────────────────────────── */
+  .cp-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-hero-dark);
+  }
+
+  .cp-hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.3;
+  }
+
+  .cp-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(4, 3, 3, 0.85) 0%,
+      rgba(4, 3, 3, 0.55) 100%
+    );
+  }
+
+  .cp-hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cp-hero .container-inner {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  .cp-hero-h1 {
+    color: var(--color-white);
+    margin: 0.75rem 0 0;
+    font-size: var(--text-h1);
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+
+  .cp-meta {
+    margin-top: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 44rem;
+  }
+
+  .cp-meta-date {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.05em;
+    color: var(--color-primary);
+    background: rgba(219, 0, 62, 0.12);
+    border: 1px solid rgba(219, 0, 62, 0.3);
+    border-radius: 999px;
+    padding: 0.3rem 1rem;
+    width: fit-content;
+  }
+
+  .cp-meta-intro {
+    font-size: 1.0625rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.75;
+    margin: 0;
+    max-width: 38rem;
+  }
+
+  /* Compliance badges */
+  .cp-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  .cp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+  }
+
+  /* ── Mobile section pills (hero) ────────────────────────────── */
+  .cp-mobile-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @media (min-width: 1024px) {
+    .cp-mobile-nav {
+      display: none;
+    }
+  }
+
+  .cp-mobile-pill {
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    padding: 0.35rem 0.875rem;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .cp-mobile-pill:hover {
+    background: rgba(219, 0, 62, 0.15);
+    border-color: rgba(219, 0, 62, 0.35);
+    color: var(--color-white);
+  }
+
+  /* ── Body layout ────────────────────────────────────────────── */
+  .cp-body {
+    background: var(--color-white);
+    padding-top: 5rem;
+    padding-bottom: 8rem;
+  }
+
+  .cp-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .cp-layout {
+      grid-template-columns: 240px 1fr;
+      gap: 5rem;
+    }
+  }
+
+  /* ── Sidebar ────────────────────────────────────────────────── */
+  .cp-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .cp-sidebar {
+      display: block;
+      position: sticky;
+      top: 2.5rem;
+    }
+  }
+
+  .cp-sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: calc(100vh - 5rem);
+    overflow-y: auto;
+  }
+
+  .cp-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.875rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .cp-sidebar-title {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-headline);
+  }
+
+  .cp-sidebar-count {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-caption);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.2rem 0.625rem;
+  }
+
+  .cp-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .cp-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+    color: var(--color-caption);
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border-left: 2px solid transparent;
+    transition: color 0.18s, background 0.18s, border-color 0.18s;
+    line-height: 1.4;
+  }
+
+  .cp-nav-num {
+    font-family: var(--font-heading);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.06em;
+    color: var(--color-border);
+    min-width: 1.5rem;
+    transition: color 0.18s;
+  }
+
+  .cp-nav-link:hover {
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border-left-color: var(--color-primary);
+  }
+
+  .cp-nav-link:hover .cp-nav-num {
+    color: var(--color-primary);
+  }
+
+  .cp-nav-link.is-active {
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border-left-color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .cp-nav-link.is-active .cp-nav-num {
+    color: var(--color-primary);
+  }
+
+  .cp-sidebar-card {
+    margin-top: 1.75rem;
+    padding: 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .cp-sidebar-card-icon {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-accent);
+    border-radius: 0.5rem;
+    color: var(--color-primary);
+  }
+
+  .cp-sidebar-card-text {
+    font-size: 0.8125rem;
+    color: var(--color-caption);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .cp-sidebar-cta {
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: opacity 0.15s;
+    width: fit-content;
+  }
+
+  .cp-sidebar-cta:hover {
+    opacity: 0.7;
+  }
+
+  /* ── Content ────────────────────────────────────────────────── */
+  .cp-content {
+    min-width: 0;
+  }
+
+  .cp-lead {
+    font-size: 1.0625rem;
+    line-height: 1.85;
+    color: var(--color-body);
+    margin: 0 0 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* ── Section layout ─────────────────────────────────────────── */
+  .cp-section {
+    padding-bottom: 3.5rem;
+    margin-bottom: 3.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .cp-section--last {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .cp-section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cp-section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-family: var(--font-heading);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .cp-section-header h2 {
+    font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-headline);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .cp-section-body h3 {
+    font-size: 1rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-headline);
+    margin: 1.75rem 0 0.625rem;
+    padding-left: 0.875rem;
+    border-left: 2px solid var(--color-primary);
+  }
+
+  .cp-section-body p {
+    font-size: var(--text-sm);
+    line-height: 1.85;
+    color: var(--color-body);
+    margin: 0 0 1rem;
+  }
+
+  .cp-section-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .cp-section-body ul {
+    margin: 0.625rem 0 1.25rem;
+    padding-left: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .cp-section-body li {
+    font-size: var(--text-sm);
+    line-height: 1.75;
+    color: var(--color-body);
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .cp-section-body li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    opacity: 0.6;
+  }
+
+  .cp-section-body a:not(.btn) {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: opacity 0.15s;
+  }
+
+  .cp-section-body a:not(.btn):hover {
+    opacity: 0.75;
+  }
+
+  /* Notice callout */
+  .cp-notice {
+    margin-top: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius-card);
+  }
+
+  .cp-notice p {
+    font-size: var(--text-xs);
+    color: var(--color-caption);
+    margin: 0;
+    line-height: 1.8;
+  }
+
+  /* Highlight block (with icon) */
+  .cp-highlight {
+    display: flex;
+    gap: 0.875rem;
+    align-items: flex-start;
+    margin-top: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-accent);
+    border: 1px solid rgba(219, 0, 62, 0.15);
+    border-radius: var(--radius-card);
+    color: var(--color-primary);
+  }
+
+  .cp-highlight svg {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  .cp-highlight p {
+    font-size: var(--text-xs);
+    line-height: 1.75;
+    color: var(--color-body);
+    margin: 0;
+  }
+
+  /* ── Cookie tables ──────────────────────────────────────────── */
+  .cp-table-wrap {
+    overflow-x: auto;
+    margin: 1.25rem 0 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+  }
+
+  .cp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-xs);
+    min-width: 520px;
+  }
+
+  .cp-table thead tr {
+    background: var(--color-headline);
+  }
+
+  .cp-table thead th {
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 0.875rem 1rem;
+    white-space: nowrap;
+  }
+
+  .cp-table tbody td {
+    padding: 0.875rem 1rem;
+    color: var(--color-body);
+    border-top: 1px solid var(--color-border);
+    vertical-align: top;
+    line-height: 1.65;
+  }
+
+  .cp-table tbody tr:hover td {
+    background: var(--color-accent);
+  }
+
+  .cp-table code {
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: rgba(219, 0, 62, 0.06);
+    padding: 0.1rem 0.375rem;
+    border-radius: 0.25rem;
+    white-space: nowrap;
+  }
+
+  /* Tags (Always on / Optional) */
+  .cp-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    border-radius: 999px;
+    padding: 0.2rem 0.625rem;
+    white-space: nowrap;
+  }
+
+  .cp-tag--yes {
+    color: #15803d;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+  }
+
+  .cp-tag--opt {
+    color: var(--color-caption);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  /* ── Google Consent Mode config grid ────────────────────────── */
+  .cp-config-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.625rem;
+    margin: 1rem 0 1.5rem;
+  }
+
+  @media (max-width: 560px) {
+    .cp-config-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .cp-config-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.875rem 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+  }
+
+  .cp-config-key code {
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: transparent;
+    padding: 0;
+  }
+
+  .cp-config-val {
+    font-size: 0.8125rem;
+    color: var(--color-caption);
+  }
+
+  /* ── Third-party cards ──────────────────────────────────────── */
+  .cp-third-party-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1.25rem 0 1.5rem;
+  }
+
+  .cp-tp-card {
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .cp-tp-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .cp-tp-name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-headline);
+  }
+
+  .cp-tp-desc {
+    font-size: var(--text-xs);
+    color: var(--color-caption);
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  .cp-tp-link {
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: opacity 0.15s;
+    width: fit-content;
+  }
+
+  .cp-tp-link:hover {
+    opacity: 0.7;
+  }
+
+  /* ── Browser list ───────────────────────────────────────────── */
+  .cp-browser-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    .cp-browser-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .cp-browser-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .cp-browser-item:hover {
+    border-color: var(--color-primary);
+    background: var(--color-accent);
+  }
+
+  .cp-browser-name {
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-body);
+    transition: color 0.15s;
+  }
+
+  .cp-browser-item:hover .cp-browser-name {
+    color: var(--color-primary);
+  }
+
+  .cp-browser-arrow {
+    font-size: var(--text-xs);
+    color: var(--color-caption);
+    transition: color 0.15s, transform 0.15s;
+  }
+
+  .cp-browser-item:hover .cp-browser-arrow {
+    color: var(--color-primary);
+    transform: translateX(2px);
+  }
+
+  /* ── Legislation list ───────────────────────────────────────── */
+  .cp-legislation-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .cp-legislation-list::before {
+    display: none;
+  }
+
+  .cp-leg-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius-card);
+    padding-left: 0 !important;
+  }
+
+  .cp-leg-item::before {
+    display: none !important;
+  }
+
+  .cp-leg-name {
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border: 1px solid rgba(219, 0, 62, 0.15);
+    border-radius: 999px;
+    padding: 0.2rem 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: center;
+    margin-left: 1.25rem;
+  }
+
+  .cp-leg-desc {
+    font-size: var(--text-xs);
+    color: var(--color-caption);
+    line-height: 1.75;
+    padding: 0.25rem 1.25rem 0.25rem 0;
+  }
+
+  /* ── ICO contact card ───────────────────────────────────────── */
+  .cp-ico-card {
+    margin: 1.5rem 0 1.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+
+  .cp-ico-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    font-size: var(--text-xs);
+  }
+
+  .cp-ico-row:nth-child(even) {
+    background: var(--color-surface);
+  }
+
+  .cp-ico-label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-headline);
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+
+  .cp-ico-val {
+    color: var(--color-body);
+    line-height: 1.5;
+  }
+
+  .cp-ico-val a {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: opacity 0.15s;
+  }
+
+  .cp-ico-val a:hover {
+    opacity: 0.75;
+  }
+
+  /* ── Page footer note ───────────────────────────────────────── */
+  .cp-page-footer {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .cp-page-footer-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .cp-footer-badge {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-caption);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .cp-page-footer-note {
+    font-size: 0.8125rem;
+    color: var(--color-caption);
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  /* .btn override guard */
+  .cp-section-body .btn {
+    margin-top: 1.5rem;
+    display: inline-flex;
+  }
+</style>
+
+<script>
+  // ── Scroll progress bar ──────────────────────────────────────
+  const progressBar = document.getElementById('cp-progress');
+  if (progressBar) {
+    const updateProgress = () => {
+      const scrolled = window.scrollY;
+      const total = document.body.scrollHeight - window.innerHeight;
+      const pct = total > 0 ? Math.min((scrolled / total) * 100, 100) : 0;
+      document.documentElement.style.setProperty('--cp-scroll', `${pct}%`);
+    };
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+  }
+
+  // ── IntersectionObserver — active sidebar link ───────────────
+  const sections = document.querySelectorAll('article[id]') as NodeListOf<HTMLElement>;
+  const navLinks = document.querySelectorAll('[data-nav]') as NodeListOf<HTMLElement>;
+
+  if (sections.length && navLinks.length) {
+    const setActive = (id: string) => {
+      navLinks.forEach(link => {
+        const matches = link.getAttribute('data-nav') === id;
+        link.classList.toggle('is-active', matches);
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: '-15% 0px -75% 0px', threshold: 0 }
+    );
+
+    sections.forEach(s => observer.observe(s));
+  }
+</script>

@@ -1,0 +1,234 @@
+---
+/**
+ * thank-you.astro
+ * ─────────────────────────────────────────────────────────
+ * Confirmation page shown after a general enquiry is submitted.
+ * Premium animated design — no generic success screen patterns.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const siteName = import.meta.env.PUBLIC_SITE_NAME || 'Your Clinic';
+---
+
+<BaseLayout
+  title={`Thank You — ${siteName}`}
+  description={`Thank you for getting in touch with ${siteName}. A member of our team will be in touch within one working day.`}
+  noindex={true}
+>
+
+  <section class="ty-page">
+
+    <!-- Subtle background accent layer -->
+    <div class="ty-bg-glow" aria-hidden="true"></div>
+
+    <div class="ty-inner">
+
+      <!-- ── Animated confirmation icon ───────────────── -->
+      <div class="ty-icon-wrap anim-pop">
+        <div class="ty-ring">
+          <svg
+            class="ty-svg"
+            viewBox="0 0 64 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle
+              class="ty-circle"
+              cx="32"
+              cy="32"
+              r="28"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"
+            />
+            <path
+              class="ty-check"
+              d="M20 33l8 8 16-16"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <!-- ── Eyebrow ────────────────────────────────── -->
+      <span class="eyebrow anim-up delay-a">Message Sent</span>
+
+      <!-- ── Headline ───────────────────────────────── -->
+      <h1 class="ty-heading anim-up delay-b">
+        Thank you for<br />contacting us!
+      </h1>
+
+      <!-- ── Supporting text ───────────────────────── -->
+      <p class="ty-body anim-up delay-c">
+        A member of our team will be in touch within one working day. If your need is urgent, please call us directly.
+      </p>
+
+      <!-- ── Divider ────────────────────────────────── -->
+      <div class="ty-divider anim-up delay-d" aria-hidden="true"></div>
+
+      <!-- ── CTA ───────────────────────────────────── -->
+      <div class="anim-up delay-e">
+        <a href="/" class="btn btn-default">Back to Homepage</a>
+      </div>
+
+    </div>
+
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ── Page layout ────────────────────────────────────────────── */
+  .ty-page {
+    min-height: 72vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 1.5rem;
+    background: var(--color-white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Soft radial gradient from brand accent colour at top centre */
+  .ty-bg-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 90% 60% at 50% -10%,
+      var(--color-accent) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Inner content wrapper ──────────────────────────────────── */
+  .ty-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    max-width: 34rem;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* ── Animated confirmation ring ─────────────────────────────── */
+  .ty-icon-wrap {
+    margin-bottom: 0.25rem;
+  }
+
+  .ty-ring {
+    width: 5.5rem;
+    height: 5.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-white);
+    border-radius: 50%;
+    color: var(--color-primary);
+    box-shadow:
+      0 0 0 10px var(--color-accent),
+      0 16px 48px rgba(219, 0, 62, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .ty-svg {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  /* Circle stroke draws clockwise from 12 o'clock */
+  .ty-circle {
+    stroke-dasharray: 176;   /* 2π × 28 ≈ 175.9 */
+    stroke-dashoffset: 176;
+    transform-origin: 32px 32px;
+    transform: rotate(-90deg);
+    animation: drawCircle 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+  }
+
+  /* Check mark draws in after circle completes */
+  .ty-check {
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+    animation: drawCheck 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.78s forwards;
+  }
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  .ty-heading {
+    font-size: clamp(2rem, 5vw, 2.875rem);
+    font-weight: var(--font-weight-extrabold);
+    color: var(--color-headline);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .ty-body {
+    font-size: var(--text-lg);
+    color: var(--color-caption);
+    line-height: 1.75;
+    margin: 0;
+    max-width: 26rem;
+  }
+
+  /* ── Divider ────────────────────────────────────────────────── */
+  .ty-divider {
+    width: 3rem;
+    height: 2px;
+    background: var(--color-border);
+    border-radius: 1px;
+    margin: 0.5rem 0;
+  }
+
+  /* ── Entrance animations ────────────────────────────────────── */
+  .anim-pop {
+    opacity: 0;
+    transform: scale(0.55);
+    animation: popIn 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0s forwards;
+  }
+
+  .anim-up {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: fadeUp 0.55s ease-out forwards;
+  }
+
+  .delay-a { animation-delay: 0.9s;  }
+  .delay-b { animation-delay: 1.05s; }
+  .delay-c { animation-delay: 1.2s;  }
+  .delay-d { animation-delay: 1.32s; }
+  .delay-e { animation-delay: 1.44s; }
+
+  /* ── Keyframes ──────────────────────────────────────────────── */
+  @keyframes drawCircle {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes popIn {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

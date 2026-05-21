@@ -1,0 +1,1057 @@
+---
+/**
+ * contact.astro
+ * ─────────────────────────────────────────────────────────
+ * Production-grade contact page using the canonical
+ * Web3Forms Pro pattern. See .claude/skills/contactform.md
+ * for the full reusable skill (per-client setup, dashboard
+ * config, CSP, troubleshooting).
+ *
+ * Form architecture (direct-to-Web3Forms, no API route):
+ *   1. Visitor fills form → JS executes invisible reCAPTCHA v3
+ *   2. JS rewrites subject + from_name + replyto with the
+ *      visitor's name and email
+ *   3. POST JSON to https://api.web3forms.com/submit
+ *   4. Primary recipient = the inbox configured in the
+ *      Web3Forms dashboard (NOT a `to` field — that's wrong)
+ *   5. Additional CCs = the `ccemail` field (semicolon-
+ *      separated, NOT comma)
+ *   6. On success → redirect to /thank-you
+ *   7. On failure → inline error, NO redirect, button restored
+ *
+ * Per-client checklist (Cloudflare Pages → Build env vars):
+ *   - PUBLIC_SITE_NAME           e.g. "Smith Clinic"
+ *   - PUBLIC_WEB3FORMS_KEY       Web3Forms access UUID
+ *   - PUBLIC_CLIENT_EMAIL        semicolon-separated CC list
+ *   - PUBLIC_RECAPTCHA_SITE_KEY  Google reCAPTCHA v3 Site Key
+ *   Cloudflare does NOT auto-rebuild on env-var changes —
+ *   click Retry deployment after saving.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero   from '../components/PageHero.astro';
+
+// ── Env-driven config — production-safe fallbacks ────────────
+// Use || (not ??) so empty-string env vars fall through too.
+const siteName = import.meta.env.PUBLIC_SITE_NAME || 'Your Clinic';
+
+const web3formsKey     = import.meta.env.PUBLIC_WEB3FORMS_KEY      || '';
+const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || '';
+
+// CC list — Web3Forms expects semicolon separator. Auto-normalise
+// any legacy comma-separated values so the form keeps working.
+const rawClientEmail = import.meta.env.PUBLIC_CLIENT_EMAIL || 'client@inbox.co.uk; agency@hmdg.co.uk';
+const ccEmail = rawClientEmail.replace(/,\s*/g, '; ');
+
+// ── Per-client clinic data — UPDATE THESE PER DEPLOY ─────────
+// (Could be lifted into a config file later; kept here for
+// readability while the template is single-tenant.)
+const clinicPhoneDisplay = '+44 (0) 1234 567 890';
+const clinicPhoneTel     = '+441234567890';
+const clinicEmail        = 'hello@yourclinic.co.uk';
+const clinicAddressLine1 = '1 Example Street';
+const clinicAddressLine2 = 'Town, Postcode';
+const clinicMapsUrl      = 'https://maps.google.com/?q=1+Example+Street+Town+Postcode';
+
+// Mon=1 ... Fri=5; Saturday=6, Sunday=0 closed.
+// Update per client. 24h format. minutes 0-59.
+const clinicHours = {
+  mon: { open: '09:00', close: '17:00' },
+  tue: { open: '09:00', close: '17:00' },
+  wed: { open: '09:00', close: '17:00' },
+  thu: { open: '09:00', close: '17:00' },
+  fri: { open: '09:00', close: '17:00' },
+  sat: null,
+  sun: null,
+};
+const clinicHoursAttr = JSON.stringify(clinicHours);
+
+const heroImg = '/images/contact-hero.webp';
+
+// ── MedicalClinic JSON-LD — local SEO signal ─────────────────
+// Maps the per-client clinic data above into a structured-data
+// graph that Google uses for the Local Pack and rich results.
+// Update the per-client variables; this block updates automatically.
+const dayMap: Record<string, string> = {
+  mon: 'Monday',    tue: 'Tuesday',  wed: 'Wednesday',
+  thu: 'Thursday',  fri: 'Friday',   sat: 'Saturday',  sun: 'Sunday',
+};
+const openingHoursSpec = (Object.entries(clinicHours) as [keyof typeof clinicHours, typeof clinicHours.mon][])
+  .filter(([, spec]) => spec !== null)
+  .map(([day, spec]) => ({
+    '@type':     'OpeningHoursSpecification',
+    dayOfWeek:   dayMap[day],
+    opens:       spec!.open,
+    closes:      spec!.close,
+  }));
+
+const localityRaw = clinicAddressLine2.split(',');
+const addressLocality = (localityRaw[0] ?? '').trim();
+const postalCode      = (localityRaw[1] ?? '').trim();
+
+const _siteOrigin = Astro.site ? Astro.site.origin : Astro.url.origin;
+
+const medicalClinicJsonLd = {
+  '@context':  'https://schema.org',
+  '@type':     'MedicalClinic',
+  name:        siteName,
+  telephone:   clinicPhoneTel,
+  email:       clinicEmail,
+  url:         _siteOrigin + '/contact',
+  address: {
+    '@type':         'PostalAddress',
+    streetAddress:   clinicAddressLine1,
+    addressLocality,
+    postalCode,
+    addressCountry:  'GB',
+  },
+  openingHoursSpecification: openingHoursSpec,
+};
+---
+
+<BaseLayout
+  title={`Contact Us — ${siteName}`}
+  description={`Contact ${siteName} - phone, email, or send a message. Every enquiry is answered by a human within one working day. Visit us at ${clinicAddressLine1}, ${clinicAddressLine2}.`}
+  heroImage={heroImg}
+>
+
+  <!-- LocalBusiness/MedicalClinic structured data (Google rich results, Local Pack). -->
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(medicalClinicJsonLd)}></script>
+
+  <PageHero
+    image={heroImg}
+    imageAlt=""
+    eyebrow="CONTACT"
+    headline={`Let's Start the <span class="heading-accent">Conversation</span>`}
+    intro="Tell us how we can help. Phone, email, or send a message — every enquiry is answered by a human within one working day."
+  />
+
+  <!-- ── Section 1 — navy strip with white curved card ────────── -->
+  <section class="contact-strip firstsection">
+    <div class="container-main">
+      <div class="contact-card">
+
+        <div class="contact-grid">
+
+          <!-- ── Left column — Contact info ────────────────────── -->
+          <div class="contact-info">
+
+            <span class="eyebrow">CONTACT</span>
+            <h2 class="contact-h2">Get in <span class="heading-accent">Touch</span></h2>
+
+            <p class="contact-intro">
+              Whether you have a question about a treatment, a quote, or want to
+              book an appointment — we read every message and reply within one
+              working day. No bots, no chatbots, no auto-responders.
+            </p>
+
+            <div class="response-pill">
+              <svg class="response-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>We Respond Within 1 Working Day</span>
+            </div>
+
+            <ul class="contact-card-list no-bullets" data-clinic-hours={clinicHoursAttr}>
+
+              <!-- Phone -->
+              <li>
+                <a class="contact-card-row" href={`tel:${clinicPhoneTel}`} aria-label={`Call us on ${clinicPhoneDisplay}`}>
+                  <span class="contact-icon-circle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                  </span>
+                  <div class="contact-text">
+                    <span class="contact-label">Phone</span>
+                    <span class="contact-value">{clinicPhoneDisplay}</span>
+                  </div>
+                  <span class="availability-badge js-availability" aria-hidden="true">
+                    <span class="availability-dot"></span>
+                    <span class="js-availability-text">Checking…</span>
+                  </span>
+                </a>
+              </li>
+
+              <!-- Email -->
+              <li>
+                <a class="contact-card-row" href={`mailto:${clinicEmail}`} aria-label={`Send us an email at ${clinicEmail}`}>
+                  <span class="contact-icon-circle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22 6 12 13 2 6"></polyline>
+                    </svg>
+                  </span>
+                  <div class="contact-text">
+                    <span class="contact-label">Email</span>
+                    <span class="contact-value">{clinicEmail}</span>
+                  </div>
+                </a>
+              </li>
+
+              <!-- Address -->
+              <li>
+                <a class="contact-card-row" href={clinicMapsUrl} target="_blank" rel="noopener noreferrer" aria-label={`View ${clinicAddressLine1}, ${clinicAddressLine2} on Google Maps (opens in a new tab)`}>
+                  <span class="contact-icon-circle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                  </span>
+                  <div class="contact-text">
+                    <span class="contact-label">Address</span>
+                    <span class="contact-value">{clinicAddressLine1}<br />{clinicAddressLine2}</span>
+                  </div>
+                </a>
+              </li>
+
+            </ul>
+
+            <!-- Live region — announces availability changes for screen readers.
+                 Sits OUTSIDE the <a> elements so the announcement isn't trapped. -->
+            <span class="sr-only" aria-live="polite" id="availability-live"></span>
+
+            <!-- Decorative halo — clipped inside its own wrapper so the parent
+                 grid can keep its overflow visible (preserves curved card edges). -->
+            <div class="halo-clip" aria-hidden="true">
+              <div class="halo"></div>
+            </div>
+
+          </div>
+
+          <!-- ── Right column — Form panel ────────────────────── -->
+          <div class="contact-form-wrap">
+
+            <span class="eyebrow eyebrow-form">SEND US A MESSAGE</span>
+
+            <form
+              id="contact-form"
+              data-site-name={siteName}
+              data-recaptcha-key={recaptchaSiteKey}
+              data-redirect="/thank-you"
+              novalidate
+              class="form-card"
+            >
+              <!-- ── Web3Forms hidden config ──────────────────── -->
+
+              {/* Access key — public by design. Bound to the Web3Forms
+                  dashboard form whose Recipient Emails = primary inbox. */}
+              <input type="hidden" name="access_key" value={web3formsKey} />
+
+              {/* CC list — Web3Forms Pro feature. Field name is `ccemail`,
+                  separator is `;`. NOT `cc`, NOT comma. */}
+              {ccEmail && <input type="hidden" name="ccemail" value={ccEmail} />}
+
+              {/* Subject + from_name — rewritten by JS at submit time to
+                  include the visitor's name. Default values are fallback. */}
+              <input type="hidden" name="subject"   class="js-subject"   value={`${siteName} - New Contact Enquiry`} />
+              <input type="hidden" name="from_name" class="js-from"      value={siteName} />
+
+              {/* Reply-to — populated by JS so "Reply" in the recipient
+                  inbox pre-fills the visitor's email. */}
+              <input type="hidden" name="replyto"   class="js-replyto"   value="" />
+
+              {/* reCAPTCHA v3 token — Web3Forms field name is
+                  `recaptcha_response`, NOT Google's `g-recaptcha-response`. */}
+              <input type="hidden" name="recaptcha_response" class="js-recaptcha-token" value="" />
+
+              {/* Honeypot — invisible to humans, autofilled by dumb bots. */}
+              <input
+                type="checkbox"
+                name="botcheck"
+                class="hidden-honeypot"
+                aria-hidden="true"
+                tabindex="-1"
+                autocomplete="off"
+              />
+
+              <!-- ── Visible fields ────────────────────────────── -->
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="cf-first-name">First Name <span class="req" aria-hidden="true">*</span></label>
+                  <input id="cf-first-name" type="text" name="first_name" class="input" autocomplete="given-name" required />
+                </div>
+                <div class="field">
+                  <label for="cf-last-name">Last Name <span class="req" aria-hidden="true">*</span></label>
+                  <input id="cf-last-name" type="text" name="last_name" class="input" autocomplete="family-name" required />
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="cf-phone">Phone Number</label>
+                  <input id="cf-phone" type="tel" name="phone" class="input" autocomplete="tel" inputmode="tel" />
+                </div>
+                <div class="field">
+                  <label for="cf-email">Email Address <span class="req" aria-hidden="true">*</span></label>
+                  <input id="cf-email" type="email" name="email" class="input" autocomplete="email" inputmode="email" required />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="cf-message">How Can We Help? <span class="req" aria-hidden="true">*</span></label>
+                <textarea id="cf-message" name="message" class="input" rows="5" required></textarea>
+              </div>
+
+              <fieldset class="field pref-fieldset">
+                <legend>Preferred Contact Method</legend>
+                <div class="pref-pills">
+                  <label class="pref-pill">
+                    <input type="radio" name="preferred_contact" value="Email" />
+                    <span class="pref-pill-inner">
+                      <svg class="pref-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22 6 12 13 2 6"></polyline>
+                      </svg>
+                      <span>Email</span>
+                    </span>
+                  </label>
+                  <label class="pref-pill">
+                    <input type="radio" name="preferred_contact" value="Telephone" />
+                    <span class="pref-pill-inner">
+                      <svg class="pref-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                      <span>Telephone</span>
+                    </span>
+                  </label>
+                  <label class="pref-pill">
+                    <input type="radio" name="preferred_contact" value="Either" checked />
+                    <span class="pref-pill-inner">
+                      <svg class="pref-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      <span>Either</span>
+                    </span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <!-- ── Status messages ──────────────────────────────── -->
+              <div id="cf-success" class="form-msg form-msg-success hidden" role="status" aria-live="polite">
+                Thank you — your message has been sent. We will be in touch shortly.
+              </div>
+              <div id="cf-error" class="form-msg form-msg-error hidden" role="alert" aria-live="assertive">
+                Something went wrong. Please try again, or email us directly at <a href={`mailto:${clinicEmail}`}>{clinicEmail}</a>.
+              </div>
+
+              <!-- ── Submit ───────────────────────────────────────── -->
+              <div class="submit-row">
+                <button
+                  type="submit"
+                  class="btn btn-default cf-submit"
+                  aria-label="Send message"
+                >
+                  <span class="js-label">Send Message</span>
+                  <span class="js-spinner hidden" aria-hidden="true">Sending…</span>
+                </button>
+              </div>
+
+              {recaptchaSiteKey && (
+                <p class="recaptcha-terms">
+                  This site is protected by reCAPTCHA and the Google{' '}
+                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" aria-label="Google Privacy Policy (opens in a new tab)">Privacy Policy</a>
+                  {' '}and{' '}
+                  <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" aria-label="Google Terms of Service (opens in a new tab)">Terms of Service</a>
+                  {' '}apply.
+                </p>
+              )}
+            </form>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+{recaptchaSiteKey && (
+  <script is:inline src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`} async defer></script>
+)}
+
+<script>
+  // ── Type-safe handle to the Google reCAPTCHA global ───────────────
+  declare global {
+    interface Window {
+      grecaptcha?: {
+        ready:   (cb: () => void) => void;
+        execute: (siteKey: string, opts: { action: string }) => Promise<string>;
+      };
+    }
+  }
+
+  type DayKey = 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
+  type Hours  = Record<DayKey, { open: string; close: string } | null>;
+
+  // ── Availability badge — clinic open/closed indicator ─────────────
+  function initAvailability() {
+    const list = document.querySelector<HTMLUListElement>('[data-clinic-hours]');
+    if (!list) return;
+
+    const badge = list.querySelector<HTMLElement>('.js-availability');
+    const text  = list.querySelector<HTMLElement>('.js-availability-text');
+    if (!badge || !text) return;
+
+    let hours: Hours;
+    try {
+      hours = JSON.parse(list.dataset.clinicHours ?? '{}') as Hours;
+    } catch {
+      badge.classList.add('hidden');
+      return;
+    }
+
+    const dayKeys: DayKey[]  = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const dayNames: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    const now      = new Date();
+    const today    = dayKeys[now.getDay()]!;
+    const todaySpec = hours[today];
+    const nowMins  = now.getHours() * 60 + now.getMinutes();
+
+    const toMins = (hhmm: string) => {
+      const [h, m] = hhmm.split(':').map(Number);
+      return (h ?? 0) * 60 + (m ?? 0);
+    };
+
+    let isOpen = false;
+    let label  = '';
+
+    if (todaySpec) {
+      const openM  = toMins(todaySpec.open);
+      const closeM = toMins(todaySpec.close);
+      if (nowMins >= openM && nowMins < closeM) {
+        isOpen = true;
+        label  = 'Open Now';
+      }
+    }
+
+    if (!isOpen) {
+      // Find next open slot. If today still has an upcoming open window, use it;
+      // otherwise scan forward up to 7 days.
+      for (let offset = 0; offset < 8; offset++) {
+        const d        = (now.getDay() + offset) % 7;
+        const key      = dayKeys[d]!;
+        const spec     = hours[key];
+        if (!spec) continue;
+
+        const openM = toMins(spec.open);
+        if (offset === 0 && nowMins >= openM) continue;
+
+        const dayLabel = offset === 0
+          ? 'Today'
+          : offset === 1
+            ? 'Tomorrow'
+            : dayNames[d];
+
+        // Format opening time as e.g. "9am" or "9:30am"
+        const [hStr, mStr] = spec.open.split(':');
+        const h     = Number(hStr);
+        const m     = Number(mStr);
+        const ampm  = h >= 12 ? 'pm' : 'am';
+        const h12   = ((h + 11) % 12) + 1;
+        const tStr  = m === 0 ? `${h12}${ampm}` : `${h12}:${String(m).padStart(2, '0')}${ampm}`;
+
+        label = `Opens ${dayLabel} ${tStr}`;
+        break;
+      }
+    }
+
+    if (!label) {
+      badge.classList.add('hidden');
+      return;
+    }
+
+    text.textContent = label;
+    badge.classList.toggle('is-open',   isOpen);
+    badge.classList.toggle('is-closed', !isOpen);
+
+    const live = document.getElementById('availability-live');
+    if (live) live.textContent = `Phone line: ${label}.`;
+  }
+
+  // ── Form submit — Web3Forms direct ─────────────────────────────────
+  function initContactForm() {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    if (!form) return;
+
+    const submit  = form.querySelector<HTMLButtonElement>('.cf-submit')!;
+    const label   = form.querySelector<HTMLSpanElement>('.js-label')!;
+    const spinner = form.querySelector<HTMLSpanElement>('.js-spinner')!;
+    const subject = form.querySelector<HTMLInputElement>('.js-subject')!;
+    const fromEl  = form.querySelector<HTMLInputElement>('.js-from')!;
+    const replyto = form.querySelector<HTMLInputElement>('.js-replyto')!;
+    const tokenEl = form.querySelector<HTMLInputElement>('.js-recaptcha-token')!;
+    const success = document.getElementById('cf-success');
+    const error   = document.getElementById('cf-error');
+
+    const siteName     = form.dataset.siteName     ?? 'Your Clinic';
+    const recaptchaKey = form.dataset.recaptchaKey ?? '';
+    const redirectUrl  = form.dataset.redirect     ?? '';
+
+    const originalLabel    = label.textContent ?? 'Send Message';
+    const originalAriaLabel = submit.getAttribute('aria-label') ?? originalLabel;
+
+    // Re-entry guard — prevents double-submit if the user double-clicks
+    // or hits Enter twice while the request is in flight.
+    let isSubmitting = false;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      success?.classList.add('hidden');
+      error?.classList.add('hidden');
+
+      // Personalise subject + from_name with full name
+      const first = (form.querySelector<HTMLInputElement>('[name="first_name"]')?.value ?? '').trim();
+      const last  = (form.querySelector<HTMLInputElement>('[name="last_name"]')?.value  ?? '').trim();
+      const fullName = `${first} ${last}`.trim();
+
+      if (fullName) {
+        subject.value = `${siteName} - New Contact Enquiry From ${fullName}`;
+        fromEl.value  = fullName;
+      } else {
+        subject.value = `${siteName} - New Contact Enquiry`;
+        fromEl.value  = siteName;
+      }
+
+      // replyto = visitor email (CRLF stripped to defend against
+      // header injection if someone pastes a newline-laden value).
+      const emailVal = (form.querySelector<HTMLInputElement>('[name="email"]')?.value ?? '')
+        .replace(/[\r\n]/g, '')
+        .trim();
+      if (emailVal) replyto.value = emailVal;
+
+      // Loading state — visual + accessible
+      submit.disabled = true;
+      label.classList.add('hidden');
+      spinner.classList.remove('hidden');
+      submit.setAttribute('aria-label', 'Sending, please wait');
+
+      try {
+        if (recaptchaKey && window.grecaptcha) {
+          await new Promise<void>((resolve) => window.grecaptcha!.ready(resolve));
+          tokenEl.value = await window.grecaptcha.execute(recaptchaKey, { action: 'submit' });
+        }
+
+        const data = Object.fromEntries(new FormData(form));
+        const res  = await fetch('https://api.web3forms.com/submit', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body:    JSON.stringify(data),
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          if (redirectUrl) {
+            window.location.href = redirectUrl;
+            return;
+          }
+          success?.classList.remove('hidden');
+          form.reset();
+        } else {
+          error?.classList.remove('hidden');
+          console.error('[ContactForm] Web3Forms rejected:', json);
+        }
+      } catch (err) {
+        error?.classList.remove('hidden');
+        console.error('[ContactForm] submit error:', err);
+      } finally {
+        submit.disabled = false;
+        label.classList.remove('hidden');
+        spinner.classList.add('hidden');
+        submit.setAttribute('aria-label', originalAriaLabel);
+        label.textContent = originalLabel;
+        isSubmitting = false;
+      }
+    });
+  }
+
+  initAvailability();
+  initContactForm();
+</script>
+
+<style>
+  /* ── Section: navy strip with curved white card overlay ─────────── */
+  .contact-strip {
+    background-color: var(--color-hero-dark);
+    padding-top:    var(--spacing-section-y);
+    padding-bottom: var(--spacing-section-y);
+  }
+  @media (min-width: 1200px) {
+    .contact-strip {
+      padding-top:    var(--spacing-section-y-lg);
+      padding-bottom: var(--spacing-section-y-lg);
+    }
+  }
+
+  .contact-card {
+    position:         relative;
+    background-color: var(--color-white);
+    border-radius:    1.5rem;
+    padding:          2rem 1.25rem;
+    box-shadow:       var(--shadow-card);
+  }
+  @media (min-width: 768px) {
+    .contact-card {
+      padding: 2.5rem 2rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .contact-card {
+      padding: 3rem;
+    }
+  }
+
+  /* ── 45/55 grid (favours form on desktop) ───────────────────────── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .contact-grid {
+      grid-template-columns: 45fr 55fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+  }
+
+  /* ── Left column ───────────────────────────────────────────────── */
+  .contact-info {
+    position: relative;
+    z-index:  1;
+  }
+
+  .contact-h2 {
+    margin: 0;
+  }
+  .contact-h2 :global(.heading-accent) {
+    font-style: italic;
+    color:      var(--color-primary);
+  }
+
+  .contact-intro {
+    margin:    1rem 0 0;
+    color:     var(--color-body);
+    font-size: var(--text-base);
+    max-width: 28rem;
+  }
+
+  /* ── Response-time pill ─────────────────────────────────────────── */
+  .response-pill {
+    display:        inline-flex;
+    align-items:    center;
+    gap:            0.5rem;
+    margin-top:     1.5rem;
+    padding:        0.5rem 0.875rem;
+    border:         1px solid var(--color-border);
+    border-radius:  var(--radius-badge);
+    font-size:      var(--text-xs);
+    font-weight:    var(--font-weight-semibold);
+    color:          var(--color-headline);
+    background:     var(--color-white);
+  }
+  .response-pill-icon {
+    width:  1rem;
+    height: 1rem;
+    color:  var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  /* ── Contact card list ──────────────────────────────────────────── */
+  .no-bullets {
+    list-style: none;
+    padding:    0;
+    margin:     0;
+  }
+
+  .contact-card-list {
+    margin-top: 2rem;
+    display:    flex;
+    flex-direction: column;
+    gap:        0.75rem;
+    position:   relative;
+    z-index:    1;
+  }
+
+  /* Tablet: 3-up horizontal row */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .contact-card-list {
+      flex-direction: row;
+      flex-wrap:      wrap;
+      gap:            0.75rem;
+    }
+    .contact-card-list > li {
+      flex: 1 1 calc(33.333% - 0.5rem);
+      min-width: 0;
+    }
+  }
+
+  .contact-card-row {
+    display:        flex;
+    align-items:    center;
+    gap:            1rem;
+    width:          100%;
+    padding:        1rem;
+    background:     var(--color-white);
+    border:         1px solid var(--color-border);
+    border-radius:  var(--radius-card);
+    color:          var(--color-headline);
+    text-decoration: none;
+    transition:     border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .contact-card-row:hover {
+    border-color: var(--color-primary);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .contact-card-row:hover {
+      box-shadow: var(--shadow-card);
+      transform:  translateY(-1px);
+    }
+  }
+  .contact-card-row:focus-visible {
+    outline:        2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  /* Tablet horizontal cards stack their inner content */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .contact-card-row {
+      flex-direction: column;
+      align-items:    flex-start;
+      text-align:     left;
+      min-height:     7rem;
+    }
+  }
+
+  .contact-icon-circle {
+    width:           2.75rem;
+    height:          2.75rem;
+    min-width:       2.75rem;
+    border-radius:   50%;
+    background:      var(--color-accent);
+    color:           var(--color-primary);
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    transition:      background-color 0.2s ease, color 0.2s ease;
+  }
+  .contact-icon-circle svg {
+    width:  1.25rem;
+    height: 1.25rem;
+  }
+  .contact-card-row:hover .contact-icon-circle {
+    background: var(--color-hero-dark);
+    color:      var(--color-white);
+  }
+
+  .contact-text {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.125rem;
+    flex:           1;
+    min-width:      0;
+  }
+  .contact-label {
+    font-size:      var(--text-xs);
+    font-weight:    var(--font-weight-semibold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color:          var(--color-caption);
+  }
+  .contact-value {
+    font-size:    var(--text-base); /* 16px minimum — WCAG 1.4.4 / project rule */
+    font-weight:  var(--font-weight-semibold);
+    color:        var(--color-headline);
+    line-height:  1.4;
+    word-break:   break-word;
+  }
+
+  /* Availability badge */
+  .availability-badge {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           0.375rem;
+    padding:       0.25rem 0.625rem;
+    border-radius: var(--radius-badge);
+    font-size:     0.6875rem;
+    font-weight:   var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    background:    var(--color-muted);
+    color:         var(--color-body);
+    flex-shrink:   0;
+  }
+  .availability-badge.is-open {
+    background: rgb(34 197 94 / 0.12);
+    color:      rgb(22 101 52);
+  }
+  .availability-badge.is-closed {
+    background: rgb(148 163 184 / 0.18);
+    color:      rgb(51 65 85);
+  }
+  .availability-dot {
+    width:         0.5rem;
+    height:        0.5rem;
+    border-radius: 50%;
+    background:    currentColor;
+    flex-shrink:   0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .is-open .availability-dot {
+      animation: pulse 2s ease-in-out infinite;
+    }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1;   transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* ── Decorative halo (clipped inside its own wrapper) ───────────── */
+  .halo-clip {
+    position:      absolute;
+    inset:         0;
+    overflow:      hidden;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index:       0;
+  }
+  .halo {
+    position:   absolute;
+    bottom:     -8rem;
+    left:       -6rem;
+    width:      24rem;
+    height:     24rem;
+    border-radius: 50%;
+    background: var(--color-hero-dark);
+    opacity:    0.045;
+    filter:     blur(80px);
+  }
+
+  /* ── sr-only utility ────────────────────────────────────────────── */
+  .sr-only {
+    position: absolute;
+    width:    1px;
+    height:   1px;
+    padding:  0;
+    margin:   -1px;
+    overflow: hidden;
+    clip:     rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border:   0;
+  }
+
+  /* ── Form panel ─────────────────────────────────────────────────── */
+  .contact-form-wrap {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.75rem;
+  }
+  .eyebrow-form {
+    margin: 0 0 0.5rem;
+  }
+
+  .form-card {
+    display:        flex;
+    flex-direction: column;
+    gap:            1.25rem;
+    background:     var(--color-surface);
+    border:         1px solid var(--color-border);
+    border-radius:  var(--radius-card);
+    padding:        1.5rem;
+  }
+  @media (min-width: 1024px) {
+    .form-card {
+      padding: 2rem;
+    }
+  }
+
+  .field {
+    display:        flex;
+    flex-direction: column;
+    gap:            0.5rem;
+    flex:           1;
+    min-width:      0;
+  }
+  .field label,
+  .field legend {
+    font-size:    var(--text-sm);
+    font-weight:  var(--font-weight-semibold);
+    color:        var(--color-headline);
+  }
+  .req {
+    color: var(--color-primary);
+  }
+
+  .field-row {
+    display:        flex;
+    flex-direction: column;
+    gap:            1.25rem;
+  }
+  @media (min-width: 480px) {
+    .field-row {
+      flex-direction: row;
+      gap:            1rem;
+    }
+  }
+
+  textarea.input {
+    resize:   vertical;
+    min-height: 7rem;
+  }
+
+  /* ── Honeypot — visually invisible, accessibility invisible ─────── */
+  .hidden-honeypot {
+    position:   absolute;
+    left:       -9999px;
+    width:      1px;
+    height:     1px;
+    opacity:    0;
+    pointer-events: none;
+  }
+
+  /* ── Pill radio group ───────────────────────────────────────────── */
+  .pref-fieldset {
+    border:  0;
+    padding: 0;
+    margin:  0;
+  }
+  .pref-fieldset legend {
+    margin-bottom: 0.5rem;
+    padding:       0;
+  }
+
+  .pref-pills {
+    display: flex;
+    gap:     0.5rem;
+  }
+
+  .pref-pill {
+    flex:     1 1 0;
+    cursor:   pointer;
+    position: relative;
+    min-width: 0;
+  }
+  .pref-pill input[type="radio"] {
+    position: absolute;
+    width:    1px;
+    height:   1px;
+    opacity:  0;
+    pointer-events: none;
+  }
+  .pref-pill-inner {
+    display:        flex;
+    align-items:    center;
+    justify-content: center;
+    gap:            0.5rem;
+    padding:        0.625rem 0.75rem;
+    border:         1px solid var(--color-border);
+    background:     var(--color-white);
+    border-radius:  var(--radius-input);
+    color:          var(--color-body);
+    font-size:      var(--text-sm);
+    font-weight:    var(--font-weight-medium);
+    transition:     border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+    user-select:    none;
+    min-height:     2.75rem;
+  }
+  .pref-pill-icon {
+    width:       1rem;
+    height:      1rem;
+    flex-shrink: 0;
+  }
+  .pref-pill:hover .pref-pill-inner {
+    border-color: var(--color-primary);
+    color:        var(--color-headline);
+  }
+  .pref-pill input[type="radio"]:checked + .pref-pill-inner {
+    background:   color-mix(in srgb, var(--color-primary) 10%, white);
+    border:       1.5px solid var(--color-primary);
+    color:        var(--color-primary);
+    font-weight:  var(--font-weight-semibold);
+  }
+  .pref-pill input[type="radio"]:focus-visible + .pref-pill-inner {
+    outline:        2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Mobile <480px: stay 3-up, hide icons, smaller font */
+  @media (max-width: 479px) {
+    .pref-pills {
+      gap: 0.375rem;
+    }
+    .pref-pill-inner {
+      padding:    0.5rem 0.25rem;
+      font-size:  0.875rem;
+      min-height: 2.75rem; /* 44px — WCAG 2.5.5 minimum touch target */
+      gap:        0;
+    }
+    .pref-pill-icon {
+      display: none;
+    }
+  }
+
+  /* ── Status messages ────────────────────────────────────────────── */
+  .form-msg {
+    padding:       0.75rem 1rem;
+    border-radius: var(--radius-input);
+    font-size:     var(--text-sm);
+    line-height:   1.5;
+  }
+  .form-msg-success {
+    background:   rgb(34 197 94 / 0.1);
+    border:       1px solid rgb(34 197 94 / 0.3);
+    color:        rgb(22 101 52);
+  }
+  .form-msg-error {
+    background:   rgb(239 68 68 / 0.08);
+    border:       1px solid rgb(239 68 68 / 0.25);
+    color:        rgb(127 29 29);
+  }
+  .form-msg-error a {
+    color:           rgb(127 29 29);
+    text-decoration: underline;
+  }
+  .hidden {
+    display: none;
+  }
+
+  /* ── Submit row ────────────────────────────────────────────────── */
+  .submit-row {
+    margin-top: 1.5rem; /* 40px gap between radios+legend and the CTA */
+    display:    flex;
+  }
+  @media (min-width: 480px) {
+    .submit-row {
+      margin-top: 2.5rem;
+    }
+  }
+  .cf-submit {
+    width: 100%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cf-submit:hover {
+      box-shadow: var(--shadow-raised);
+    }
+  }
+
+  /* ── reCAPTCHA terms small print ────────────────────────────────── */
+  .recaptcha-terms {
+    font-size:   0.75rem;
+    line-height: 1.5;
+    color:       var(--color-caption);
+    margin:      0;
+  }
+  .recaptcha-terms a {
+    color:           var(--color-caption);
+    text-decoration: underline;
+  }
+  .recaptcha-terms a:hover {
+    color: var(--color-primary);
+  }
+</style>

@@ -1,0 +1,988 @@
+@import "tailwindcss";
+
+/* ── Self-hosted fonts ─────────────────────────────────────────
+   Inter + Inter Tight served from Netlify's CDN with immutable
+   cache headers. No Google Fonts round-trips, no data sent to
+   Google on page load. Variable fonts = one file per subset covers
+   the full weight range 100-900 (we use 400-800).
+───────────────────────────────────────────────────────────────── */
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/inter/wght-italic.css";
+@import "@fontsource-variable/inter-tight";
+@import "@fontsource-variable/inter-tight/wght-italic.css";
+
+/* ============================================================
+   GLOBAL DESIGN SYSTEM
+   Reusable Clinic Website Base Template
+   Astro + Tailwind CSS v4
+
+   HOW TO USE PER CLIENT:
+   1. Change --color-primary and --color-primary-hover (brand colour)
+   2. Change --color-accent (light brand tint for section backgrounds)
+   3. Change --font-heading and --font-body if needed
+   4. Everything else inherits automatically across all components
+
+   NOTE: There is no tailwind.config.js in Tailwind v4.
+   All design tokens live here in @theme. This IS the config.
+   ============================================================ */
+
+@theme {
+
+  /* ──────────────────────────────────────────────────────────
+     PRIMARY BRAND COLOURS
+     Change these three per clinic client.
+     Every button, link, accent, and tint inherits from these.
+
+     Tailwind v4 generates utility classes automatically:
+       --color-primary       → bg-primary  / text-primary  / border-primary
+       --color-primary-hover → bg-primary-hover / text-primary-hover
+       --color-accent        → bg-accent   / text-accent   / border-accent
+     ────────────────────────────────────────────────────────── */
+  --color-primary:        #DB003E;   /* main brand — buttons, links, accents    */
+  --color-primary-hover:  #dd0d48;   /* hover state — slightly lighter red      */
+  --color-accent:         #FDF2F5;   /* light brand tint — section backgrounds  */
+
+  /* ──────────────────────────────────────────────────────────
+     CONTENT COLOURS
+     Text colours for headings, body, and captions.
+     Consistent across all clinic builds.
+     ────────────────────────────────────────────────────────── */
+  --color-headline:  #040303;   /* near-black — all headings h1–h6            */
+  --color-body:      #151515;   /* near-black — paragraphs and body text      */
+  --color-caption:   #94a3b8;   /* light grey — captions, labels, meta text   */
+
+  /* ──────────────────────────────────────────────────────────
+     SURFACE & LAYOUT COLOURS
+     Background and border colours for sections, cards, inputs.
+     ────────────────────────────────────────────────────────── */
+  --color-muted:    #F2F2F2;   /* light grey — alternating section backgrounds */
+  --color-surface:  #f8fafc;   /* off-white — cards, form backgrounds          */
+  --color-border:   #e2e8f0;   /* subtle borders and dividers                  */
+  --color-white:    #ffffff;   /* pure white — card backgrounds, nav           */
+  --color-black:    #000000;   /* pure black — use sparingly                   */
+  --color-hero-dark: #0a0f1a;  /* deep navy-black — legal page hero backgrounds */
+
+  /* ──────────────────────────────────────────────────────────
+     TYPOGRAPHY — FONT FAMILIES
+
+     --font-heading  Inter Tight
+       A condensed variant of Inter. Tighter letter-fit makes
+       large headings feel stronger and more premium without
+       switching to a completely different typeface. The optical
+       compactness at large sizes (H1–H3) creates impact while
+       staying clean and modern — ideal for clinic brands.
+
+     --font-body     Inter
+       The standard Inter. Slightly wider than Inter Tight,
+       which makes it easier to read at small sizes (16px body
+       text). Consistent with the heading family so the overall
+       design stays cohesive, not jarring.
+
+     Pairing logic:
+       Same family (Inter) used for both — tight variant for
+       display, standard variant for reading. This is the same
+       approach used by Linear, Vercel, and many premium SaaS
+       products. It delivers typographic contrast without the
+       risk of a mismatched font pairing.
+
+     To swap per client:
+       Only change --font-heading here. A serif like
+       'Playfair Display' can give a more traditional medical
+       or luxury feel if the brief calls for it.
+     ────────────────────────────────────────────────────────── */
+  /* Primary family is the self-hosted variable font from @fontsource.
+     'Inter Tight' / 'Inter' fallbacks cover any env where the variable
+     font isn't loaded yet; system fallbacks last. */
+  --font-heading:  'Inter Tight Variable', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+  --font-body:     'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans:     'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* ──────────────────────────────────────────────────────────
+     TYPOGRAPHY — RESPONSIVE HEADING SIZES (clamp)
+
+     Formula: clamp(min, preferred, max)
+     — min  = size at 375px viewport (mobile)
+     — max  = size at 1440px viewport (desktop)
+     — preferred = fluid value calculated between the two
+
+     Why clamp()?
+     The size grows smoothly between mobile and desktop.
+     No media query breakpoints needed. No layout jumps.
+     Always looks right at every screen width.
+
+     Naming convention: --text-h1 through --text-h6
+     Tailwind v4 reads --text-* and generates text-h1 etc.
+     Line-height: --text-h1--line-height (Tailwind v4 syntax)
+     ────────────────────────────────────────────────────────── */
+
+  /* H1 — Hero headlines, page titles
+     Mobile: ~40px  →  Desktop: ~72px
+     Tight line-height for impactful large type              */
+  --text-h1:                  clamp(2.5rem, 3vw + 1.8rem, 4.5rem);
+  --text-h1--line-height:     1.08;
+  --text-h1--letter-spacing:  -0.03em;
+
+  /* H2 — Section headings
+     Mobile: ~32px  →  Desktop: ~56px                       */
+  --text-h2:                  clamp(2rem, 2.25vw + 1.47rem, 3.5rem);
+  --text-h2--line-height:     1.12;
+  --text-h2--letter-spacing:  -0.025em;
+
+  /* H3 — Sub-section titles, card headings
+     Mobile: ~24px  →  Desktop: ~40px                       */
+  --text-h3:                  clamp(1.5rem, 1.5vw + 1.15rem, 2.5rem);
+  --text-h3--line-height:     1.2;
+  --text-h3--letter-spacing:  -0.02em;
+
+  /* H4 — Card titles, feature names, sidebar headings
+     Mobile: ~20px  →  Desktop: ~28px                       */
+  --text-h4:                  clamp(1.25rem, 0.75vw + 1.07rem, 1.75rem);
+  --text-h4--line-height:     1.3;
+  --text-h4--letter-spacing:  -0.015em;
+
+  /* H5 — Labels above headings, small section titles
+     Mobile: ~18px  →  Desktop: ~22px                       */
+  --text-h5:                  clamp(1.125rem, 0.375vw + 1.04rem, 1.375rem);
+  --text-h5--line-height:     1.35;
+  --text-h5--letter-spacing:  -0.01em;
+
+  /* H6 — Small labels, footnote headings
+     Mobile: ~16px  →  Desktop: ~18px                       */
+  --text-h6:                  clamp(1rem, 0.19vw + 0.96rem, 1.125rem);
+  --text-h6--line-height:     1.4;
+  --text-h6--letter-spacing:  0em;
+
+  /* ──────────────────────────────────────────────────────────
+     TYPOGRAPHY — BODY TEXT
+     Always 16px — never smaller. Clinic users include older
+     adults who need comfortable reading sizes. 1.75 line-
+     height gives generous breathing room between lines.
+     ────────────────────────────────────────────────────────── */
+  --text-base:                1rem;        /* 16px — body text default         */
+  --text-base--line-height:   1.75;        /* generous — comfortable reading   */
+
+  --text-sm:                  0.9375rem;   /* 15px — captions, labels          */
+  --text-sm--line-height:     1.6;
+
+  --text-xs:                  0.875rem;    /* 14px — fine print, badges        */
+  --text-xs--line-height:     1.5;
+
+  --text-lg:                  1.125rem;    /* 18px — lead paragraphs, intros   */
+  --text-lg--line-height:     1.8;
+
+  --text-xl:                  1.25rem;     /* 20px — large body, callouts      */
+  --text-xl--line-height:     1.75;
+
+  /* ──────────────────────────────────────────────────────────
+     TYPOGRAPHY — FONT WEIGHTS
+     Named semantically so the system reads like a brief.
+     ────────────────────────────────────────────────────────── */
+  --font-weight-normal:    400;   /* body text                                 */
+  --font-weight-medium:    500;   /* labels, nav items, subtle emphasis        */
+  --font-weight-semibold:  600;   /* buttons, card titles, sub-headings        */
+  --font-weight-bold:      700;   /* h3–h6, section labels                     */
+  --font-weight-extrabold: 800;   /* h1–h2, hero headlines                     */
+
+  /* ──────────────────────────────────────────────────────────
+     SPACING SCALE — CONTAINER & SECTION SYSTEM
+
+     Container max-width: 1340px (83.75rem)
+       Keeps content readable and balanced on large screens.
+       Narrower than full-bleed — premium, editorial feel.
+
+     Responsive vertical padding (two-tier):
+       Mobile  (0px – 1199px):  70px top + bottom
+       Desktop (1200px – 1920px): 90px top + bottom
+     Horizontal padding fixed at 30px on all screens.
+
+     Flex layout gap:
+       Default gap for .flex-layout is 15px.
+       Override per layout using Tailwind gap-* utilities.
+
+     Token map:
+       .container-main  → max-width + responsive padding
+       .container-inner → padding: 0 (nested child)
+       .section         → alias for .container-main
+       .container       → max-width only, no padding
+       .flex-layout     → flex + 15px default gap
+     ────────────────────────────────────────────────────────── */
+  --spacing-section-y:        4.375rem;  /* 70px   — vertical padding mobile  (<1200px) */
+  --spacing-section-y-lg:     5.625rem;  /* 90px   — vertical padding desktop (≥1200px) */
+  --spacing-section-x:        1.875rem;  /* 30px   — horizontal padding, all screens    */
+  --spacing-container-max:    83.75rem;  /* 1340px — max-width for all containers       */
+  --spacing-card-p:           1.75rem;   /* 28px   — inner padding for cards            */
+  --spacing-gap:              0.9375rem; /* 15px   — default flex-layout gap            */
+  --spacing-gap-md:           1.5rem;    /* 24px   — medium gap (cards, grids)          */
+  --spacing-gap-lg:           2rem;      /* 32px   — large gap (section columns)        */
+
+  /* ──────────────────────────────────────────────────────────
+     BORDER RADIUS
+     ────────────────────────────────────────────────────────── */
+  --radius-card:    0.75rem;    /* 12px — cards, image wrappers, panels        */
+  --radius-btn:     0.625rem;  /* 10px — all buttons (global rule)             */
+  --radius-input:   0.625rem;  /* 10px — form inputs (matches buttons)         */
+  --radius-badge:   9999px;    /* pill — labels, tags, badges                  */
+
+  /* ──────────────────────────────────────────────────────────
+     SHADOWS
+     ────────────────────────────────────────────────────────── */
+  --shadow-card:   0 1px 3px 0 rgb(0 0 0 / 0.06), 0 4px 16px -2px rgb(0 0 0 / 0.08);
+  --shadow-raised: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 12px 32px -4px rgb(0 0 0 / 0.12);
+  --shadow-nav:    0 1px 0 0 rgb(0 0 0 / 0.06), 0 2px 8px -1px rgb(0 0 0 / 0.06);
+
+}
+
+
+/* ============================================================
+   BASE STYLES
+   Applied globally to HTML elements.
+   These ensure consistent typography out of the box without
+   needing to add classes to every heading.
+   ============================================================ */
+
+@layer base {
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    /* Firefox — apply thin custom scrollbar to every scroll container */
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  html {
+    font-family:              var(--font-body);
+    font-size:                1rem;
+    color:                    var(--color-body);
+    background-color:         var(--color-white);
+    -webkit-font-smoothing:   antialiased;
+    -moz-osx-font-smoothing:  grayscale;
+    text-rendering:           optimizeLegibility;
+  }
+
+  /* Smooth scroll only when the user has not requested reduced motion.
+     Placing it here (not on html directly) satisfies both Lighthouse and
+     WCAG 2.1 SC 2.3.3 — no motion triggered without consent. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* ── Custom Scrollbar — WebKit (Chrome, Safari, Edge) ────
+     Thin, rounded, and minimal. Matches the design system.
+     Track is transparent to avoid visual weight.
+     Thumb uses soft neutral slate tones that lift on hover
+     and confirm the grab on active — without competing with
+     the brand colour or adding visual noise to the layout. */
+
+  ::-webkit-scrollbar {
+    width:  6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background:    transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius:    999px;
+    transition:       background-color 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-caption);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background-color: #64748b;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* ── Headings ─────────────────────────────────────────────
+     Base heading styles applied globally.
+     Colour and weight are set here — override per component
+     using Tailwind utilities when needed.                   */
+  h1, h2, h3, h4, h5, h6 {
+    font-family:  var(--font-heading);
+    color:        var(--color-headline);
+    font-weight:  var(--font-weight-extrabold);
+  }
+
+  h1 {
+    font-size:      var(--text-h1);
+    line-height:    var(--text-h1--line-height);
+    letter-spacing: var(--text-h1--letter-spacing);
+  }
+
+  h2 {
+    font-size:      var(--text-h2);
+    line-height:    var(--text-h2--line-height);
+    letter-spacing: var(--text-h2--letter-spacing);
+  }
+
+  h3 {
+    font-size:      var(--text-h3);
+    line-height:    var(--text-h3--line-height);
+    letter-spacing: var(--text-h3--letter-spacing);
+    font-weight:    var(--font-weight-bold);
+  }
+
+  h4 {
+    font-size:      var(--text-h4);
+    line-height:    var(--text-h4--line-height);
+    letter-spacing: var(--text-h4--letter-spacing);
+    font-weight:    var(--font-weight-bold);
+  }
+
+  h5 {
+    font-size:      var(--text-h5);
+    line-height:    var(--text-h5--line-height);
+    letter-spacing: var(--text-h5--letter-spacing);
+    font-weight:    var(--font-weight-semibold);
+  }
+
+  h6 {
+    font-size:      var(--text-h6);
+    line-height:    var(--text-h6--line-height);
+    letter-spacing: var(--text-h6--letter-spacing);
+    font-weight:    var(--font-weight-semibold);
+  }
+
+  /* ── Body & Paragraph ─────────────────────────────────────*/
+  body {
+    font-size:   var(--text-base);
+    line-height: var(--text-base--line-height);
+  }
+
+  p {
+    font-size:   var(--text-base);
+    line-height: var(--text-base--line-height);
+    color:       var(--color-body);
+  }
+
+  /* ── Links ────────────────────────────────────────────────*/
+  a {
+    color:           var(--color-primary);
+    text-decoration: none;
+    transition:      color 0.2s ease;
+  }
+  a:hover {
+    color: var(--color-primary-hover);
+  }
+
+  /* ── Lists ────────────────────────────────────────────────*/
+  ul, ol {
+    padding-left: 1.25rem;
+    line-height:  var(--text-base--line-height);
+  }
+
+  /* ── Images ───────────────────────────────────────────────*/
+  img, video {
+    max-width: 100%;
+    display:   block;
+  }
+
+  /* ── Strong / Bold ────────────────────────────────────────*/
+  strong, b {
+    font-weight: var(--font-weight-semibold);
+    color:       var(--color-headline);
+  }
+
+}
+
+
+/* ============================================================
+   REUSABLE COMPONENT UTILITIES
+   Common patterns used across all clinic sections.
+   Apply these class names in any component or page.
+   ============================================================ */
+
+@layer components {
+
+  /* ════════════════════════════════════════════════════════
+     CONTAINER SYSTEM
+     ════════════════════════════════════════════════════════
+
+     Two classes. One rule: always nest .container-inner
+     inside .container-main when you need a padded outer
+     wrapper with an unpadded inner content area.
+
+     Typical page section pattern:
+     ┌─────────────────────────────────────────────────────┐
+     │  <section class="bg-muted">          (bg only)      │
+     │    <div class="container-main">      (padding + max) │
+     │      <div class="container-inner">   (no padding)    │
+     │        …content…                                     │
+     │      </div>                                          │
+     │    </div>                                            │
+     │  </section>                                          │
+     └─────────────────────────────────────────────────────┘
+
+     Or when the container IS the section:
+     ┌─────────────────────────────────────────────────────┐
+     │  <div class="container-main bg-accent">             │
+     │    …content…                                        │
+     │  </div>                                             │
+     └─────────────────────────────────────────────────────┘
+     ════════════════════════════════════════════════════════ */
+
+  /* ── container-main ───────────────────────────────────────
+     The primary wrapper for every section.
+     — Centres content horizontally (margin: auto)
+     — Caps width at 1340px — balanced, readable on all screens
+     — Applies responsive vertical padding:
+         Vertical padding now goes on the <section> element, not
+         the container. See Section Padding Convention in
+         .claude/rules/frontend.md.
+     — Applies fixed horizontal padding: 30px both sides
+     ────────────────────────────────────────────────────────*/
+  .container-main {
+    width:          100%;
+    max-width:      var(--spacing-container-max);
+    margin-left:    auto;
+    margin-right:   auto;
+    padding-left:   var(--spacing-section-x);
+    padding-right:  var(--spacing-section-x);
+  }
+
+  /* ── container-inner ──────────────────────────────────────
+     Used when nesting a block inside .container-main.
+     Removes all inherited padding so content aligns flush
+     to the edge of its parent without double spacing.
+
+     Use cases:
+     — Sub-grids inside a padded section
+     — Full-width image or card rows inside a container
+     — Any nested layout that must not inherit outer padding
+     ────────────────────────────────────────────────────────*/
+  .container-inner {
+    padding: 0;
+  }
+
+  /* ── section ──────────────────────────────────────────────
+     Alias for .container-main.
+     Use when the element is a semantic <section> tag.
+     Identical behaviour — just a readable naming option.
+     Vertical padding now goes on the <section> element.
+     ────────────────────────────────────────────────────────*/
+  .section {
+    width:          100%;
+    max-width:      var(--spacing-container-max);
+    margin-left:    auto;
+    margin-right:   auto;
+    padding-left:   var(--spacing-section-x);
+    padding-right:  var(--spacing-section-x);
+  }
+
+  /* ── container ────────────────────────────────────────────
+     Lightweight max-width wrapper with no padding.
+     Use when you need width-capping without any spacing,
+     e.g. inside nav, footer, or already-padded sections.
+     ────────────────────────────────────────────────────────*/
+  .container {
+    width:         100%;
+    max-width:     var(--spacing-container-max);
+    margin-left:   auto;
+    margin-right:  auto;
+  }
+
+
+  /* ════════════════════════════════════════════════════════
+     FLEX LAYOUT SYSTEM
+     ════════════════════════════════════════════════════════
+
+     Flexbox is the default layout system for this template.
+     Every row of items — service cards, team members, CTA
+     pairs, icon rows — should use .flex-layout as the base.
+
+     Default gap: 15px (--spacing-gap: 0.9375rem)
+     This is intentionally tight. It creates compact, dense
+     layouts that feel content-rich without looking cluttered.
+
+     Override gap only when the design requires it:
+       class="flex-layout gap-[--spacing-gap-md]"   → 24px
+       class="flex-layout gap-[--spacing-gap-lg]"   → 32px
+       class="flex-layout gap-6"                    → Tailwind 24px
+       class="flex-layout gap-8"                    → Tailwind 32px
+
+     Available tokens for gap override:
+       --spacing-gap     0.9375rem  15px  (default)
+       --spacing-gap-md  1.5rem     24px  (cards, grids)
+       --spacing-gap-lg  2rem       32px  (section columns)
+
+     Usage pattern:
+     ┌─────────────────────────────────────────────────────┐
+     │  <div class="flex-layout">                          │
+     │    <div>Item A</div>                                │
+     │    <div>Item B</div>                                │
+     │    <div>Item C</div>                                │
+     │  </div>                                             │
+     └─────────────────────────────────────────────────────┘
+
+     With direction or alignment modifiers:
+     ┌─────────────────────────────────────────────────────┐
+     │  <div class="flex-layout flex-col">                 │
+     │  <div class="flex-layout items-center">             │
+     │  <div class="flex-layout justify-between">          │
+     │  <div class="flex-layout flex-wrap">                │
+     └─────────────────────────────────────────────────────┘
+     ════════════════════════════════════════════════════════ */
+
+  /* ── flex-layout ──────────────────────────────────────────
+     Base flex container. Default gap 15px. Wraps by default
+     so items reflow cleanly on smaller screens.
+     ────────────────────────────────────────────────────────*/
+  .flex-layout {
+    display:    flex;
+    flex-wrap:  wrap;
+    gap:        var(--spacing-gap); /* 15px default */
+  }
+
+  /* ── flex-layout--row ─────────────────────────────────────
+     Explicit horizontal row. Items sit side by side.
+     This is the default behaviour — use when you want to
+     make the direction clear in the markup.
+     ────────────────────────────────────────────────────────*/
+  .flex-layout--row {
+    flex-direction: row;
+  }
+
+  /* ── flex-layout--col ─────────────────────────────────────
+     Vertical stack. Items stack on top of each other.
+     Useful for sidebar content, info blocks, form fields.
+     ────────────────────────────────────────────────────────*/
+  .flex-layout--col {
+    flex-direction: column;
+  }
+
+  /* ── flex-layout--center ──────────────────────────────────
+     Centre-aligns and justifies all children.
+     Use for CTA rows, trust badges, centred icon lists.
+     ────────────────────────────────────────────────────────*/
+  .flex-layout--center {
+    align-items:     center;
+    justify-content: center;
+  }
+
+  /* ── flex-layout--between ─────────────────────────────────
+     Spreads children to opposite ends.
+     Use for nav rows, header bars, split CTA layouts.
+     ────────────────────────────────────────────────────────*/
+  .flex-layout--between {
+    align-items:     center;
+    justify-content: space-between;
+  }
+
+  /* ── flex-layout--start ───────────────────────────────────
+     Aligns children to the top/start of the cross axis.
+     Default for most content rows — text and images align top.
+     ────────────────────────────────────────────────────────*/
+  .flex-layout--start {
+    align-items: flex-start;
+  }
+
+
+  /* ── Section header — eyebrow + heading + subtext ─────────
+     Used at the top of: Services, Testimonials, Team, FAQ etc */
+  .section-header {
+    text-align:    center;
+    margin-bottom: 3.5rem;
+  }
+
+  /* Eyebrow label — small uppercase text above the heading   */
+  .eyebrow {
+    display:         block;
+    font-size:       var(--text-sm);
+    font-weight:     var(--font-weight-semibold);
+    letter-spacing:  0.1em;
+    text-transform:  uppercase;
+    color:           var(--color-primary);
+    margin-bottom:   0.75rem;
+  }
+
+  /* Section subtext — paragraph below section heading        */
+  .section-lead {
+    font-size:   var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    color:       var(--color-body);
+    max-width:   40rem;
+    margin:      0.75rem auto 0;
+  }
+
+  /* ════════════════════════════════════════════════════════
+     BUTTON SYSTEM
+     ════════════════════════════════════════════════════════
+
+     All buttons share the same base via .btn.
+     Variants only override colour and border — never size.
+
+     Usage:
+       <a href="#" class="btn btn-default">Book Now</a>
+       <a href="#" class="btn btn-secondary">Learn More</a>
+       <a href="#" class="btn btn-white">View Services</a>
+       <a href="#" class="btn btn-transparent">Read More</a>
+
+     Button map:
+       .btn              → base (shared size, shape, font, transition)
+       .btn-default      → primary bg, white text
+       .btn-white        → white bg, headline dark text
+       .btn-transparent  → no bg, white border, white text (on dark/coloured bg)
+       .btn-secondary    → no bg, primary border, primary text
+
+     Global rule: border-radius = 10px (--radius-btn: 0.625rem)
+     ════════════════════════════════════════════════════════ */
+
+  /* ── Base — shared across all button variants ─────────────
+     Every button must have both .btn AND a variant class.
+     .btn alone has no colour — it only sets size and shape.
+     ────────────────────────────────────────────────────────*/
+  .btn {
+    display:          inline-flex;
+    align-items:      center;
+    justify-content:  center;
+    gap:              0.5rem;
+    height:           3rem;              /* 48px — consistent height all buttons */
+    padding:          0 1.875rem;        /* 30px horizontal, height via fixed px  */
+    font-family:      var(--font-body);
+    font-size:        var(--text-sm);
+    font-weight:      500;
+    line-height:      1;
+    border-radius:    var(--radius-btn); /* 10px — global button rule             */
+    border:           1px solid transparent;
+    white-space:      nowrap;
+    text-decoration:  none;
+    cursor:           pointer;
+    transition:
+      background-color  0.2s ease,
+      color             0.2s ease,
+      border-color      0.2s ease,
+      opacity           0.2s ease,
+      box-shadow        0.2s ease,
+      transform         0.15s ease;
+  }
+
+  .btn:active {
+    transform: translateY(0) !important;
+  }
+
+  .btn:focus-visible {
+    outline:        2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  /* ── btn-default — primary filled ─────────────────────────
+     Use on: main CTA buttons, hero CTAs, form submits
+     Background: primary (#DB003E)
+     Text: white
+     Hover: opacity 0.4 (strong fade — clearly interactive)
+     ────────────────────────────────────────────────────────*/
+  .btn-default {
+    background-color: var(--color-primary);
+    color:            var(--color-white);
+    border-color:     transparent;
+  }
+  .btn-default:hover {
+    background-color: var(--color-primary-hover);
+    color:            var(--color-white);
+    transform:        translateY(-1px);
+  }
+
+  /* ── btn-white — white filled ──────────────────────────────
+     Use on: buttons placed on coloured backgrounds (CTA
+     banners, hero sections with dark/brand backgrounds)
+     Background: white
+     Text: headline (near-black)
+     Hover: subtle lift + light shadow
+     ────────────────────────────────────────────────────────*/
+  .btn-white {
+    background-color: var(--color-white);
+    color:            var(--color-headline);
+    border-color:     transparent;
+  }
+  .btn-white:hover {
+    background-color: var(--color-muted);
+    color:            var(--color-headline);
+    transform:        translateY(-1px);
+    box-shadow:       var(--shadow-raised);
+  }
+
+  /* ── btn-transparent — ghost on dark background ────────────
+     Use on: dark section overlays, coloured hero backgrounds,
+     image sections where a solid button would feel heavy
+     Background: transparent
+     Border: white
+     Text: white
+     Hover: subtle white fill (10% opacity)
+     ────────────────────────────────────────────────────────*/
+  .btn-transparent {
+    background-color: transparent;
+    color:            var(--color-white);
+    border-color:     var(--color-white);
+  }
+  .btn-transparent:hover {
+    background-color: rgb(255 255 255 / 0.12);
+    color:            var(--color-white);
+    transform:        translateY(-1px);
+  }
+
+  /* ── btn-secondary — ghost on light background ─────────────
+     Use on: secondary actions next to btn-default, service
+     pages, anywhere a soft call-to-action is needed
+     Background: transparent
+     Border: primary colour
+     Text: primary colour
+     Hover: light accent background tint
+     ────────────────────────────────────────────────────────*/
+  .btn-secondary {
+    background-color: transparent;
+    color:            var(--color-primary);
+    border-color:     var(--color-primary);
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-accent);
+    color:            var(--color-primary);
+    transform:        translateY(-1px);
+  }
+
+  /* ── Card ──────────────────────────────────────────────────*/
+  .card {
+    background-color: #ffffff;
+    border:           1px solid var(--color-border);
+    border-radius:    var(--radius-card);
+    padding:          var(--spacing-card-p);
+    box-shadow:       var(--shadow-card);
+    transition:       box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+  .card:hover {
+    box-shadow:    var(--shadow-raised);
+    border-color:  var(--color-primary);
+    transform:     translateY(-2px);
+  }
+
+  /* ════════════════════════════════════════════════════════
+     NAVIGATION ACTIVE STATE (Header + Footer)
+     ════════════════════════════════════════════════════════
+
+     Mandatory system — every nav link in Header.astro and
+     Footer.astro uses `.is-active` to visually indicate the
+     current page. Applied via Astro's class:list directive.
+
+     Tiers this covers:
+       1. Top-level plain links
+       2. Top-level dropdown triggers (via isSection)
+       3. Mid-level flyout triggers (via isSection)  ← most missed
+       4. Leaf links in dropdowns
+       5. Every mobile equivalent
+
+     See .claude/rules/frontend.md — "Navigation Active State"
+     for the full helper + handoff rules.
+     ════════════════════════════════════════════════════════ */
+
+  /* ── Header nav item — white bg, primary active colour ───
+     Used on every site-nav-item and mobile-nav-item. Hover
+     styling is kept inline in the Header.astro markup via
+     Tailwind so this only owns the active-state layer.      */
+  .site-nav-item.is-active,
+  .nav-dropdown-item.is-active,
+  .mobile-nav-item.is-active,
+  .mobile-sub-item.is-active {
+    color:       var(--color-primary);
+    font-weight: 500;
+  }
+
+  /* ── Footer link — dark bg, semibold white for active ────
+     Dark footer background requires a stronger active state
+     than hover. Default = caption grey, hover = white/400,
+     active = white/600. Three-tier contrast keeps current
+     page distinguishable from hover without extra decoration. */
+  .footer-link {
+    color:       var(--color-caption);
+    transition:  color 0.2s ease;
+  }
+  .footer-link:hover {
+    color: #ffffff;
+  }
+  .footer-link.is-active {
+    color:       #ffffff;
+    font-weight: 600;
+  }
+
+
+  /* ── Form inputs ───────────────────────────────────────────*/
+  .input {
+    width:            100%;
+    background-color: #ffffff;
+    border:           1px solid var(--color-border);
+    border-radius:    var(--radius-input);
+    padding:          0.75rem 1rem;
+    font-size:        var(--text-base);
+    font-family:      var(--font-body);
+    color:            var(--color-headline);
+    transition:       border-color 0.2s ease, box-shadow 0.2s ease;
+    outline:          none;
+  }
+  .input::placeholder {
+    color: var(--color-caption);
+  }
+  .input:focus {
+    border-color: var(--color-primary);
+    box-shadow:   0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
+  }
+
+}
+
+
+/* ============================================================
+   SWIPER OVERRIDES
+   Bring Swiper's accent colours in line with brand colour.
+   ============================================================ */
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--color-primary) !important;
+}
+.swiper-pagination-bullet-active {
+  background: var(--color-primary) !important;
+}
+
+
+/* ============================================================
+   DOCS PAGE COMPONENTS
+   Internal documentation page (index.astro) only.
+   Not used in client clinic pages.
+   ============================================================ */
+
+/* Code labels — monospace token/class names */
+.code-label {
+  font-family:  monospace;
+  font-size:    0.8125rem;
+  font-weight:  600;
+  color:        var(--color-primary);
+}
+.code-hex {
+  font-family:  monospace;
+  font-size:    0.75rem;
+  color:        var(--color-caption);
+}
+
+/* Light caption label — for use on dark backgrounds */
+.caption-light {
+  font-size:      0.6875rem;
+  font-weight:    700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color:          var(--color-caption);
+}
+
+/* Copy-to-clipboard button inside AI prompt boxes */
+.copy-btn {
+  font-size:    0.6875rem;
+  font-weight:  600;
+  letter-spacing: 0.04em;
+  color:        var(--color-caption);
+  background:   var(--color-surface);
+  border:       1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding:      0.2rem 0.625rem;
+  cursor:       pointer;
+  font-family:  var(--font-body);
+  transition:   color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+/* Prompt text — monospace content inside AI prompt boxes */
+.prompt-code {
+  font-family:  monospace;
+  font-size:    0.8125rem;
+  color:        var(--color-body);
+  background:   transparent;
+  line-height:  1.7;
+  margin:       0;
+  padding:      1rem 1.25rem;
+  border-radius: var(--radius-card);
+}
+
+/* Dark code blocks (pre/code elements) */
+.code-block {
+  background:   var(--color-headline);
+  color:        #86efac;
+  font-family:  monospace;
+  font-size:    0.75rem;
+  line-height:  1.8;
+  padding:      1.25rem 1.5rem;
+  border-radius: var(--radius-card);
+  overflow-x:   auto;
+  margin:       0;
+}
+.code-block-sm {
+  background:   rgba(255, 255, 255, 0.04);
+  color:        #86efac;
+  font-family:  monospace;
+  font-size:    0.75rem;
+  line-height:  1.8;
+  padding:      1.25rem 1.5rem;
+  border-radius: var(--radius-card);
+  margin:       0;
+}
+
+/* Colour swatch square — background applied dynamically via JS data-hex */
+.color-swatch {
+  width:        2rem;
+  height:       2rem;
+  border-radius: var(--radius-btn);
+  flex-shrink:  0;
+}
+
+/* Small primary-colour dot icon */
+.icon-dot {
+  width:        0.875rem;
+  height:       0.875rem;
+  border-radius: 50%;
+  background:   var(--color-primary);
+  flex-shrink:  0;
+}
+.icon-dot-offset {
+  width:        0.875rem;
+  height:       0.875rem;
+  border-radius: 50%;
+  background:   var(--color-primary);
+  flex-shrink:  0;
+  margin-top:   0.2rem;
+}
+
+/* 2rem filled circle — used as icon or section indicator */
+.w-2rem-swatch {
+  width:        2rem;
+  height:       2rem;
+  border-radius: var(--radius-btn);
+  background:   var(--color-primary);
+  flex-shrink:  0;
+}
+
+/* Surface container — subtle muted box with border */
+.surface-box {
+  background:   var(--color-surface);
+  border:       1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding:      1rem;
+}
+
+/* Top divider — separator inside dark sections */
+.top-divider {
+  border-top:  1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1rem;
+}
+
+/* Button preview box — wraps a live button on a coloured background */
+/* Background applied dynamically via JS data-hex */
+.doc-btn-preview {
+  padding:      0.875rem 1.25rem;
+  border-radius: var(--radius-card);
+  min-width:    14rem;
+  display:      flex;
+  align-items:  center;
+  flex-shrink:  0;
+}

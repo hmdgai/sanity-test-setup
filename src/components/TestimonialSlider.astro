@@ -1,0 +1,106 @@
+---
+/**
+ * TestimonialSlider.astro
+ * ─────────────────────────────────────────────────────────
+ * Reusable Swiper-powered testimonial carousel.
+ *
+ * How to use on any page:
+ *   import TestimonialSlider from '../components/TestimonialSlider.astro'
+ *   <TestimonialSlider testimonials={myArray} />
+ *
+ * Each testimonial object shape:
+ *   { name: string, role: string, body: string, rating: number }
+ */
+
+interface Testimonial {
+  name: string;
+  role: string;
+  body: string;
+  rating: number; // 1–5
+}
+
+interface Props {
+  testimonials: Testimonial[];
+}
+
+const { testimonials } = Astro.props;
+---
+
+<div class="relative">
+  <div class="swiper testimonial-swiper overflow-hidden rounded-[--radius-card]">
+    <div class="swiper-wrapper py-4">
+      {testimonials.map((t) => (
+        <div class="swiper-slide">
+          <div class="bg-white border border-[--color-border] rounded-[--radius-card] p-8 shadow-sm h-full flex flex-col gap-4">
+
+            <!-- Star rating -->
+            <div class="flex gap-1 text-amber-400 text-lg">
+              {Array.from({ length: t.rating }).map(() => (
+                <span>★</span>
+              ))}
+              {Array.from({ length: 5 - t.rating }).map(() => (
+                <span class="text-slate-200">★</span>
+              ))}
+            </div>
+
+            <!-- Quote -->
+            <p class="text-slate-600 leading-relaxed flex-1">"{t.body}"</p>
+
+            <!-- Author -->
+            <div class="border-t border-[--color-border] pt-4">
+              <p class="font-semibold text-[--color-headline]">{t.name}</p>
+              <p class="text-sm text-[--color-caption]">{t.role}</p>
+            </div>
+
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Pagination dots -->
+    <div class="swiper-pagination mt-6"></div>
+  </div>
+
+  <!-- Navigation arrows (outside the overflow:hidden wrapper) -->
+  <div class="swiper-button-prev !text-[--color-primary] !-left-4"></div>
+  <div class="swiper-button-next !text-[--color-primary] !-right-4"></div>
+</div>
+
+<script>
+  // Import only the Swiper modules this component actually uses.
+  // Tree-shaken by Vite at build time — no full bundle loaded.
+  // Swiper CSS is imported here so Vite bundles and hashes it with the JS,
+  // rather than a render-blocking CDN <link> in the document <head>.
+  // Swiper 12 — module-only imports (tree-shaken by Vite, no full bundle).
+  // CSS paths use the package's "./css/*" export map — same paths as Swiper 11.
+  import Swiper from 'swiper';
+  import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+  import 'swiper/css';
+  import 'swiper/css/navigation';
+  import 'swiper/css/pagination';
+
+  new Swiper(".testimonial-swiper", {
+    modules: [Navigation, Pagination, Autoplay],
+    slidesPerView: 1,
+    spaceBetween: 24,
+    loop: true,
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    breakpoints: {
+      640: { slidesPerView: 1 },
+      768: { slidesPerView: 2 },
+      1024: { slidesPerView: 3 },
+    },
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true,
+    },
+  });
+</script>

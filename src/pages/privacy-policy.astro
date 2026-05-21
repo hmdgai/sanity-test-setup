@@ -1,0 +1,782 @@
+---
+/**
+ * privacy-policy.astro
+ * ─────────────────────────────────────────────────────────
+ * Premium two-column legal page.
+ * Scroll progress bar · IntersectionObserver active sidebar ·
+ * Primary colour brand accents throughout.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const sections = [
+  { id: "types-of-information",  label: "Types of Information",   num: "01" },
+  { id: "how-we-use",            label: "How We Use It",          num: "02" },
+  { id: "disclosure",            label: "Disclosure",             num: "03" },
+  { id: "third-party",           label: "Third Party Links",      num: "04" },
+  { id: "your-rights",           label: "Your Rights",            num: "05" },
+  { id: "changes",               label: "Changes to Policy",      num: "06" },
+  { id: "contact",               label: "Contact",                num: "07" },
+];
+---
+
+<BaseLayout
+  title="Privacy Policy — ClinicName"
+  description="Privacy Policy for ClinicName. Read how we collect, use, and protect your personal data."
+>
+
+  <!-- ── Scroll progress bar ───────────────────────────────── -->
+  <div class="pp-progress" aria-hidden="true" id="pp-progress"></div>
+
+  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <section class="pp-hero">
+    <img
+      src="/images/privacypolicy.webp"
+      alt=""
+      class="pp-hero-img"
+      aria-hidden="true"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+      width="1600"
+      height="900"
+    />
+    <div class="pp-hero-overlay" aria-hidden="true"></div>
+    <div class="container-main pp-hero-content">
+      <div class="container-inner">
+        <span class="eyebrow">Legal</span>
+        <h1 class="pp-hero-h1">Privacy Policy</h1>
+        <div class="pp-meta">
+          <span class="pp-meta-badge">Version Date: January 1st 2026</span>
+          <p class="pp-meta-intro">
+            We are committed to protecting and preserving the privacy of our visitors
+            when visiting our site or communicating electronically with us.
+          </p>
+        </div>
+        <!-- Mobile section pills -->
+        <nav class="pp-mobile-nav" aria-label="Jump to section">
+          {sections.map(s => (
+            <a href={`#${s.id}`} class="pp-mobile-pill">{s.label}</a>
+          ))}
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Two-column layout ─────────────────────────────────── -->
+  <section class="pp-body">
+    <div class="container-main">
+      <div class="pp-layout">
+
+        <!-- ── Sticky sidebar ─────────────────────────── -->
+        <aside class="pp-sidebar" aria-label="Policy sections">
+          <div class="pp-sidebar-inner">
+
+            <!-- Section count / label -->
+            <div class="pp-sidebar-header">
+              <span class="pp-sidebar-title">On this page</span>
+              <span class="pp-sidebar-count">{sections.length} sections</span>
+            </div>
+
+            <!-- Nav links -->
+            <nav>
+              <ul class="pp-nav-list">
+                {sections.map(s => (
+                  <li>
+                    <a
+                      href={`#${s.id}`}
+                      class="pp-nav-link"
+                      data-nav={s.id}
+                    >
+                      <span class="pp-nav-num">{s.num}</span>
+                      <span class="pp-nav-label">{s.label}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <!-- Sidebar CTA card -->
+            <div class="pp-sidebar-card">
+              <div class="pp-sidebar-card-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <p class="pp-sidebar-card-text">Questions about this policy?</p>
+              <a href="/contact" class="pp-sidebar-cta">Get in touch →</a>
+            </div>
+
+          </div>
+        </aside>
+
+        <!-- ── Policy content ──────────────────────────── -->
+        <div class="pp-content">
+
+          <p class="pp-lead">
+            This policy sets out how we process any personal data we collect from you or
+            that you provide to us through our website. We confirm that we will keep your
+            information secure and that we will comply fully with all applicable UK Data
+            Protection legislation and regulations. By visiting our website you are
+            accepting and consenting to the practices described in this policy.
+          </p>
+
+          <!-- 01 Types of information -->
+          <article id="types-of-information" class="pp-section">
+            <div class="pp-section-header">
+              <span class="pp-section-num">01</span>
+              <h2>Types of information we may collect from you</h2>
+            </div>
+            <div class="pp-section-body">
+              <p>
+                We may collect, store and use the following kinds of personal information
+                about individuals who visit and use our website.
+              </p>
+
+              <h3>Information you supply to us</h3>
+              <p>
+                You may supply us with information about you by filling in forms on our
+                website. This includes information you provide when you submit a
+                contact or enquiry form. The information you give us may include your
+                name, address, e-mail address and phone number.
+              </p>
+
+              <h3>Information our website automatically collects</h3>
+              <p>
+                With regard to each of your visits to our website we may automatically
+                collect information including the following:
+              </p>
+              <ul>
+                <li>
+                  Technical information, including a truncated and anonymised version of
+                  your Internet protocol (IP) address, browser type and version,
+                  operating system and platform.
+                </li>
+                <li>
+                  Information about your visit, including what pages you visit, how long
+                  you are on the site, how you got to the site (including date and time),
+                  page response times, length of visit, what you click on, documents
+                  downloaded and download errors.
+                </li>
+              </ul>
+
+              <h3>Cookies</h3>
+              <p>
+                Our website uses cookies to distinguish you from other users of our
+                website. This helps us to provide you with a good experience when you
+                browse our website and also allows us to improve our site. For detailed
+                information on the cookies we use and the purposes for which we use them
+                see our <a href="/cookie-policy">Cookie Policy</a>.
+              </p>
+            </div>
+          </article>
+
+          <!-- 02 How we use -->
+          <article id="how-we-use" class="pp-section">
+            <div class="pp-section-header">
+              <span class="pp-section-num">02</span>
+              <h2>How we may use the information we collect</h2>
+            </div>
+            <div class="pp-section-body">
+              <p>We use the information in the following ways:</p>
+              <ul>
+                <li>To provide you with information and/or services that you request from us.</li>
+                <li>To administer our site including troubleshooting and statistical purposes.</li>
+                <li>To improve our site to ensure that content is presented in the most effective manner for you and for your computer.</li>
+                <li>For security and debugging as part of our efforts to keep our site safe and secure.</li>
+              </ul>
+              <p>
+                This information is collected anonymously and is not linked to information
+                that identifies you as an individual. We use Google Analytics to track this
+                information. Find out how Google uses your data at
+                <a href="https://support.google.com/analytics/answer/6004245" target="_blank" rel="noopener noreferrer">support.google.com</a>.
+              </p>
+            </div>
+          </article>
+
+          <!-- 03 Disclosure -->
+          <article id="disclosure" class="pp-section">
+            <div class="pp-section-header">
+              <span class="pp-section-num">03</span>
+              <h2>Disclosure of your information</h2>
+            </div>
+            <div class="pp-section-body">
+              <p>
+                Any information you provide to us will either be emailed directly to us
+                or may be stored on a secure server. We use a trusted third party hosting
+                provider (FlyWheel) to facilitate the running and management of this website.
+              </p>
+              <p>
+                We do not rent, sell or share personal information about you with other
+                people or non-affiliated companies. Any external sources required by your
+                website, such as mailing lists from service providers, are subject to your
+                own user agreement per the terms of your account with the provider.
+              </p>
+              <p>
+                We will use all reasonable efforts to ensure that your personal data is not
+                disclosed to regional or national institutions and authorities, unless
+                required by law or other regulations.
+              </p>
+              <div class="pp-notice">
+                <p>
+                  Unfortunately, the transmission of information via the internet is not
+                  completely secure. Although we will do our best to protect your personal
+                  data, we cannot guarantee the security of data transmitted to our site.
+                  Any transmission is at your own risk. Once we have received your
+                  information, we will use strict procedures and security features to
+                  prevent unauthorised access.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 04 Third party links -->
+          <article id="third-party" class="pp-section">
+            <div class="pp-section-header">
+              <span class="pp-section-num">04</span>
+              <h2>Third party links</h2>
+            </div>
+            <div class="pp-section-body">
+              <p>
+                Our site may, from time to time, contain links to and from third party
+                websites. If you follow a link to any of these websites, please note that
+                these websites have their own privacy policies and that we do not accept
+                any responsibility or liability for these policies. Please check these
+                policies before you submit any personal data to these websites.
+              </p>
+            </div>
+          </article>
+
+          <!-- 05 Your rights -->
+          <article id="your-rights" class="pp-section">
+            <div class="pp-section-header">
+              <span class="pp-section-num">05</span>
+              <h2>Your rights — access to your personal data</h2>
+            </div>
+            <div class="pp-section-body">
+              <p>
+                You have the right to ensure that your personal data is being processed
+                lawfully ("Subject Access Right"). Your subject access right can be
+                exercised in accordance with data protection laws and regulations. Any
+                subject access request must be made in writing to us at our email address
+                listed at the bottom of this page.
+              </p>
+              <p>
+                We will provide your personal data to you within the statutory time frames.
+                To enable us to trace any of your personal data that we may be holding, we
+                may need to request further information from you. If you have a complaint
+                about how we have used your information, you have the right to complain to
+                the Information Commissioner's Office (ICO).
+              </p>
+            </div>
+          </article>
+
+          <!-- 06 Changes -->
+          <article id="changes" class="pp-section">
+            <div class="pp-section-header">
+              <span class="pp-section-num">06</span>
+              <h2>Changes to our privacy policy</h2>
+            </div>
+            <div class="pp-section-body">
+              <p>
+                Any changes we may make to our privacy policy in the future will be posted
+                on this page and, where appropriate, notified to you by e-mail. Please
+                check back frequently to see any updates or changes to our privacy policy.
+              </p>
+            </div>
+          </article>
+
+          <!-- 07 Contact -->
+          <article id="contact" class="pp-section pp-section--last">
+            <div class="pp-section-header">
+              <span class="pp-section-num">07</span>
+              <h2>Contact</h2>
+            </div>
+            <div class="pp-section-body">
+              <p>
+                Questions, comments and requests regarding this privacy policy are
+                welcomed and should be submitted via email using the address or
+                contact form at the bottom of this page.
+              </p>
+              <a href="/contact" class="btn btn-default">Send Us a Message</a>
+            </div>
+          </article>
+
+        </div><!-- end pp-content -->
+      </div><!-- end pp-layout -->
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ── Scroll progress bar ────────────────────────────────────── */
+  .pp-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: var(--pp-scroll, 0%);
+    background: var(--color-primary);
+    z-index: 9999;
+    transition: width 0.08s linear;
+    transform-origin: left;
+    pointer-events: none;
+  }
+
+  /* ── Hero ───────────────────────────────────────────────────── */
+  .pp-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-hero-dark);
+  }
+
+  .pp-hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.3;
+  }
+
+  .pp-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(4, 3, 3, 0.8) 0%,
+      rgba(4, 3, 3, 0.55) 100%
+    );
+  }
+
+  .pp-hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .pp-hero .container-inner {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  .pp-hero-h1 {
+    color: var(--color-white);
+    margin: 0.75rem 0 0;
+    font-size: var(--text-h1);
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+
+  .pp-meta {
+    margin-top: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 44rem;
+  }
+
+  .pp-meta-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.05em;
+    color: var(--color-primary);
+    background: rgba(219, 0, 62, 0.12);
+    border: 1px solid rgba(219, 0, 62, 0.3);
+    border-radius: 999px;
+    padding: 0.3rem 1rem;
+    width: fit-content;
+  }
+
+  .pp-meta-intro {
+    font-size: 1.0625rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.75;
+    margin: 0;
+    max-width: 38rem;
+  }
+
+  /* ── Mobile section pills (hero) ────────────────────────────── */
+  .pp-mobile-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @media (min-width: 1024px) {
+    .pp-mobile-nav {
+      display: none;
+    }
+  }
+
+  .pp-mobile-pill {
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    padding: 0.35rem 0.875rem;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .pp-mobile-pill:hover {
+    background: rgba(219, 0, 62, 0.15);
+    border-color: rgba(219, 0, 62, 0.35);
+    color: var(--color-white);
+  }
+
+  /* ── Body layout ────────────────────────────────────────────── */
+  .pp-body {
+    background: var(--color-white);
+    padding-top: 5rem;
+    padding-bottom: 8rem;
+  }
+
+  .pp-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .pp-layout {
+      grid-template-columns: 240px 1fr;
+      gap: 5rem;
+    }
+  }
+
+  /* ── Sidebar ────────────────────────────────────────────────── */
+  .pp-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .pp-sidebar {
+      display: block;
+      position: sticky;
+      top: 2.5rem;
+    }
+  }
+
+  .pp-sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Sidebar header row */
+  .pp-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.875rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .pp-sidebar-title {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-headline);
+  }
+
+  .pp-sidebar-count {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-caption);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.2rem 0.625rem;
+  }
+
+  /* Nav list */
+  .pp-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .pp-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+    color: var(--color-caption);
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border-left: 2px solid transparent;
+    transition: color 0.18s, background 0.18s, border-color 0.18s;
+    line-height: 1.4;
+  }
+
+  .pp-nav-num {
+    font-family: var(--font-heading);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.06em;
+    color: var(--color-border);
+    min-width: 1.5rem;
+    transition: color 0.18s;
+  }
+
+  .pp-nav-link:hover {
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border-left-color: var(--color-primary);
+  }
+
+  .pp-nav-link:hover .pp-nav-num {
+    color: var(--color-primary);
+  }
+
+  /* Active state — driven by IntersectionObserver */
+  .pp-nav-link.is-active {
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border-left-color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .pp-nav-link.is-active .pp-nav-num {
+    color: var(--color-primary);
+  }
+
+  /* Sidebar card */
+  .pp-sidebar-card {
+    margin-top: 1.75rem;
+    padding: 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .pp-sidebar-card-icon {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-accent);
+    border-radius: 0.5rem;
+    color: var(--color-primary);
+  }
+
+  .pp-sidebar-card-text {
+    font-size: 0.8125rem;
+    color: var(--color-caption);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .pp-sidebar-cta {
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: opacity 0.15s;
+    width: fit-content;
+  }
+
+  .pp-sidebar-cta:hover {
+    opacity: 0.7;
+  }
+
+  /* ── Content lead ───────────────────────────────────────────── */
+  .pp-content {
+    min-width: 0;
+  }
+
+  .pp-lead {
+    font-size: 1.0625rem;
+    line-height: 1.85;
+    color: var(--color-body);
+    margin: 0 0 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* ── Section layout ─────────────────────────────────────────── */
+  .pp-section {
+    padding-bottom: 3.5rem;
+    margin-bottom: 3.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .pp-section--last {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  /* Section header: number + h2 inline */
+  .pp-section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pp-section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-family: var(--font-heading);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    background: var(--color-accent);
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .pp-section-header h2 {
+    font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-headline);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /* Section body typography */
+  .pp-section-body h3 {
+    font-size: 1rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-headline);
+    margin: 1.75rem 0 0.625rem;
+    padding-left: 0.875rem;
+    border-left: 2px solid var(--color-primary);
+  }
+
+  .pp-section-body p {
+    font-size: var(--text-sm);
+    line-height: 1.85;
+    color: var(--color-body);
+    margin: 0 0 1rem;
+  }
+
+  .pp-section-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .pp-section-body ul {
+    margin: 0.625rem 0 1.25rem;
+    padding-left: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .pp-section-body li {
+    font-size: var(--text-sm);
+    line-height: 1.75;
+    color: var(--color-body);
+    padding-left: 1.25rem;
+    position: relative;
+  }
+
+  .pp-section-body li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    opacity: 0.6;
+  }
+
+  .pp-section-body a:not(.btn) {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: opacity 0.15s;
+  }
+
+  .pp-section-body a:not(.btn):hover {
+    opacity: 0.75;
+  }
+
+  /* Notice callout */
+  .pp-notice {
+    margin-top: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius-card);
+  }
+
+  .pp-notice p {
+    font-size: var(--text-xs);
+    color: var(--color-caption);
+    margin: 0;
+    line-height: 1.8;
+  }
+</style>
+
+<script>
+  // ── Scroll progress bar ──────────────────────────────────────
+  const progressBar = document.getElementById('pp-progress');
+  if (progressBar) {
+    const updateProgress = () => {
+      const scrolled = window.scrollY;
+      const total = document.body.scrollHeight - window.innerHeight;
+      const pct = total > 0 ? Math.min((scrolled / total) * 100, 100) : 0;
+      document.documentElement.style.setProperty('--pp-scroll', `${pct}%`);
+    };
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+  }
+
+  // ── IntersectionObserver — active sidebar link ───────────────
+  const sections = document.querySelectorAll('article[id]') as NodeListOf<HTMLElement>;
+  const navLinks = document.querySelectorAll('[data-nav]') as NodeListOf<HTMLElement>;
+
+  if (sections.length && navLinks.length) {
+    const setActive = (id: string) => {
+      navLinks.forEach(link => {
+        const matches = link.getAttribute('data-nav') === id;
+        link.classList.toggle('is-active', matches);
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: '-15% 0px -75% 0px', threshold: 0 }
+    );
+
+    sections.forEach(s => observer.observe(s));
+  }
+</script>

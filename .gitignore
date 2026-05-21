@@ -1,0 +1,49 @@
+# build output
+dist/
+# generated types
+.astro/
+# auto-generated sitemap path list (regenerated on dev / build)
+src/data/sitemap-pages.generated.ts
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# Claude Code memory (local only — not shipped with repo)
+/memory/
+
+# Claude Code session lock file (transient session state — never commit)
+.claude/scheduled_tasks.lock
+
+# Local Cloudflare / Wrangler folders
+.wrangler
+.dev.vars
+
+# Analysis/debug artefacts — never commit these
+*.analysis.json
+*-analysis.json
+*_analysis.json
+style-analysis-report.json
+inline-styles-analysis.json
+ANALYSIS_COMPLETE.txt
+QUICK_REFERENCE.txt
+README_ANALYSIS.md
+STYLE_ANALYSIS_SUMMARY.md
+analyze_styles.py
+style_analyzer.py

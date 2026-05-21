@@ -1,0 +1,349 @@
+---
+/**
+ * ContactForm.astro
+ * ─────────────────────────────────────────────────────────
+ * Reusable Web3Forms-powered contact form.
+ *
+ * Drop this component on any page where you need a contact form:
+ *   <ContactForm />
+ *
+ * All branding (email subject, from_name) auto-populates from
+ * PUBLIC_SITE_NAME — no need to pass props. To override per-page:
+ *   <ContactForm subjectPrefix="Smith Clinic Booking" />
+ *
+ * Requirements:
+ *   - PUBLIC_SITE_NAME           — Your site/clinic name (e.g. "Smith Clinic")
+ *   - PUBLIC_WEB3FORMS_KEY       — Web3Forms access key
+ *   - PUBLIC_RECAPTCHA_SITE_KEY  — Google reCAPTCHA v3 Site Key
+ *     All three must be set in .env (local) + Cloudflare Pages env vars (production).
+ *   - Web3Forms dashboard must have the reCAPTCHA Secret Key configured so
+ *     it can verify tokens server-side.
+ *   - CSP already allows api.web3forms.com + google.com/recaptcha + gstatic.com
+ *     (see BaseLayout.astro and public/_headers — don't remove).
+ *
+ * How it works:
+ *   1. User fills the form and clicks Submit.
+ *   2. JS executes reCAPTCHA v3 invisibly → returns a token.
+ *   3. JS sends a JSON POST to https://api.web3forms.com/submit including
+ *      the token as `g-recaptcha-response`.
+ *   4. Web3Forms verifies the token with Google server-side, then emails
+ *      the submission to the inbox linked to the access key.
+ *   5. Inline success/error state shown — no page reload.
+ *   6. Form resets on success.
+ *
+ * Spam protection (layered):
+ *   - reCAPTCHA v3 — invisible, score-based (Google)
+ *   - botcheck honeypot checkbox (hidden — bots tick it, users don't)
+ *   - Web3Forms' server-side spam filtering
+ */
+
+interface Props {
+  /** Override the email subject prefix. Defaults to PUBLIC_SITE_NAME env var. */
+  subjectPrefix?: string;
+  /** Override the from_name in the email. Defaults to PUBLIC_SITE_NAME env var. */
+  brandName?: string;
+  /** Override the CC recipient list. Defaults to PUBLIC_CLIENT_EMAIL env var. Semicolon-separated for multiple — e.g. "a@x.com; b@y.com". */
+  ccEmail?: string;
+  /** Show phone field? Default: true */
+  showPhone?: boolean;
+  /** Submit button label. Default: "Send Enquiry" */
+  submitLabel?: string;
+  /** Optional unique id suffix so multiple forms can live on one page */
+  id?: string;
+  /** URL to redirect to after successful submission. Set to empty string to show inline success message instead. Default: "/thank-you" */
+  redirect?: string;
+}
+
+// Auto-detect site name from env var. Set PUBLIC_SITE_NAME once in .env +
+// Cloudflare Pages — every form on the site uses it automatically.
+// Uses || not ?? so empty-string env vars also fall back to the default.
+const siteName = import.meta.env.PUBLIC_SITE_NAME || 'Website Name';
+
+// CC list — Web3Forms expects field name `ccemail` and SEMICOLON separator
+// (NOT `cc`, NOT comma). Auto-normalise legacy comma-separated env values
+// so historical deploys keep working without a manual change.
+const rawClientEmail = import.meta.env.PUBLIC_CLIENT_EMAIL || '';
+const envCcEmail     = rawClientEmail.replace(/,\s*/g, '; ');
+
+const {
+  subjectPrefix = siteName,
+  brandName     = siteName,
+  ccEmail       = envCcEmail,
+  showPhone     = true,
+  submitLabel   = 'Send Enquiry',
+  id            = 'default',
+  redirect      = '/thank-you',
+} = Astro.props;
+
+const web3formsKey    = import.meta.env.PUBLIC_WEB3FORMS_KEY      ?? '';
+const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY ?? '';
+
+// Unique IDs so multiple forms can coexist on one page without collisions
+const formId    = `contact-form-${id}`;
+const nameId    = `contact-name-${id}`;
+const emailId   = `contact-email-${id}`;
+const phoneId   = `contact-phone-${id}`;
+const messageId = `contact-message-${id}`;
+const successId = `form-success-${id}`;
+const errorId   = `form-error-${id}`;
+---
+
+<form
+  id={formId}
+  data-subject-prefix={subjectPrefix}
+  data-brand-name={brandName}
+  data-recaptcha-key={recaptchaSiteKey}
+  data-redirect={redirect}
+  novalidate
+  class="bg-[--color-surface] border border-[--color-border] rounded-[--radius-card] p-6 flex flex-col gap-5"
+>
+  {/* Web3Forms access key — public by design, safe to expose. Bound to the
+      Web3Forms dashboard form whose "Recipient Emails" = primary inbox. */}
+  <input type="hidden" name="access_key" value={web3formsKey} />
+
+  {/* CC recipients — Web3Forms Pro feature. Field name MUST be `ccemail` and
+      separator MUST be `;`. There is NO `to` field and NO `bcc` field. */}
+  {ccEmail && <input type="hidden" name="ccemail" value={ccEmail} />}
+
+  {/* Email subject + from_name — updated dynamically with sender's name on submit */}
+  <input type="hidden" name="subject" class="js-subject" value={`${subjectPrefix} - New Entry Received`} />
+  <input type="hidden" name="from_name" class="js-from" value={brandName} />
+  <input type="hidden" name="replyto" class="js-replyto" value="" />
+
+  {/* reCAPTCHA v3 token — populated by JS just before submit.
+      Field name MUST be "recaptcha_response" per Web3Forms docs (not the
+      standard Google "g-recaptcha-response"). */}
+  <input type="hidden" name="recaptcha_response" class="js-recaptcha-token" value="" />
+
+  {/* Honeypot — real users never see this; bots autofill and are silently dropped */}
+  <input type="checkbox" name="botcheck" class="hidden-honeypot" aria-hidden="true" tabindex="-1" autocomplete="off" />
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div class="flex flex-col gap-2">
+      <label for={nameId} class="text-sm font-semibold text-[--color-headline]">
+        Full Name <span class="text-[--color-primary]" aria-hidden="true">*</span>
+      </label>
+      <input
+        id={nameId}
+        type="text"
+        name="name"
+        class="input"
+        placeholder="Jane Smith"
+        autocomplete="name"
+        required
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for={emailId} class="text-sm font-semibold text-[--color-headline]">
+        Email Address <span class="text-[--color-primary]" aria-hidden="true">*</span>
+      </label>
+      <input
+        id={emailId}
+        type="email"
+        name="email"
+        class="input"
+        placeholder="jane@example.com"
+        autocomplete="email"
+        required
+      />
+    </div>
+  </div>
+
+  {showPhone && (
+    <div class="flex flex-col gap-2">
+      <label for={phoneId} class="text-sm font-semibold text-[--color-headline]">Phone Number</label>
+      <input
+        id={phoneId}
+        type="tel"
+        name="phone"
+        class="input"
+        placeholder="+44 7700 000000"
+        autocomplete="tel"
+      />
+    </div>
+  )}
+
+  <div class="flex flex-col gap-2">
+    <label for={messageId} class="text-sm font-semibold text-[--color-headline]">
+      Your Message <span class="text-[--color-primary]" aria-hidden="true">*</span>
+    </label>
+    <textarea
+      id={messageId}
+      name="message"
+      class="input"
+      rows="4"
+      placeholder="Tell us how we can help..."
+      required
+    ></textarea>
+  </div>
+
+  {/* Status messages — hidden until submission completes */}
+  <div
+    id={successId}
+    class="hidden rounded-[--radius-input] bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800"
+    role="status"
+    aria-live="polite"
+  >
+    Thank you — your message has been sent. We will be in touch shortly.
+  </div>
+  <div
+    id={errorId}
+    class="hidden rounded-[--radius-input] bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800"
+    role="alert"
+    aria-live="assertive"
+  >
+    Something went wrong. Please try again or email us directly.
+  </div>
+
+  <div>
+    <button type="submit" class="btn btn-default js-submit" aria-label={submitLabel}>
+      <span class="js-label">{submitLabel}</span>
+      <span class="js-spinner hidden" aria-hidden="true">Sending…</span>
+    </button>
+  </div>
+
+  {/* Google terms notice — required by reCAPTCHA ToS when the badge is hidden */}
+  {recaptchaSiteKey && (
+    <p class="recaptcha-terms">
+      This site is protected by reCAPTCHA and the Google{' '}
+      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" aria-label="Google Privacy Policy (opens in a new tab)">Privacy Policy</a>
+      {' '}and{' '}
+      <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" aria-label="Google Terms of Service (opens in a new tab)">Terms of Service</a>
+      {' '}apply.
+    </p>
+  )}
+</form>
+
+{recaptchaSiteKey && (
+  <script is:inline src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`} async defer></script>
+)}
+
+<script>
+  // Type-safe handle to the global grecaptcha object injected by the Google script
+  declare global {
+    interface Window {
+      grecaptcha?: {
+        ready: (cb: () => void) => void;
+        execute: (siteKey: string, opts: { action: string }) => Promise<string>;
+      };
+    }
+  }
+
+  // Handles every <ContactForm /> on the page
+  document.querySelectorAll<HTMLFormElement>('form[data-subject-prefix]').forEach((form) => {
+    const submit      = form.querySelector<HTMLButtonElement>('.js-submit')!;
+    const label       = form.querySelector<HTMLSpanElement>('.js-label')!;
+    const spinner     = form.querySelector<HTMLSpanElement>('.js-spinner')!;
+    const subjectEl   = form.querySelector<HTMLInputElement>('.js-subject')!;
+    const fromEl      = form.querySelector<HTMLInputElement>('.js-from')!;
+    const replytoEl   = form.querySelector<HTMLInputElement>('.js-replyto')!;
+    const tokenEl     = form.querySelector<HTMLInputElement>('.js-recaptcha-token')!;
+    const success     = form.parentElement?.querySelector<HTMLDivElement>(`#${form.id.replace('contact-form-', 'form-success-')}`) ?? null;
+    const error       = form.parentElement?.querySelector<HTMLDivElement>(`#${form.id.replace('contact-form-', 'form-error-')}`) ?? null;
+
+    const subjectPrefix  = form.dataset.subjectPrefix ?? 'Website Name';
+    const recaptchaKey   = form.dataset.recaptchaKey  ?? '';
+    const redirectUrl    = form.dataset.redirect      ?? '';
+
+    const originalLabel     = label.textContent ?? 'Send Enquiry';
+    const originalAriaLabel = submit.getAttribute('aria-label') ?? originalLabel;
+
+    // Re-entry guard — prevents double-submit if the user double-clicks
+    // or hits Enter twice while the request is in flight.
+    let isSubmitting = false;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      // Clear previous status
+      success?.classList.add('hidden');
+      error?.classList.add('hidden');
+
+      // Personalise subject, from_name, and replyto with user input.
+      // Strip CRLF from email to defend against header injection attempts.
+      const nameVal  = (form.querySelector<HTMLInputElement>('[name="name"]')?.value ?? '').trim();
+      const emailVal = (form.querySelector<HTMLInputElement>('[name="email"]')?.value ?? '')
+        .replace(/[\r\n]/g, '')
+        .trim();
+      if (nameVal) {
+        subjectEl.value = `${subjectPrefix} - New Contact Enquiry From ${nameVal}`;
+        fromEl.value    = nameVal;
+      }
+      if (emailVal) {
+        replytoEl.value = emailVal;
+      }
+
+      // Loading state — visual + accessible
+      submit.disabled = true;
+      label.classList.add('hidden');
+      spinner.classList.remove('hidden');
+      submit.setAttribute('aria-label', 'Sending, please wait');
+
+      try {
+        // 1. Get a fresh reCAPTCHA v3 token
+        if (recaptchaKey && window.grecaptcha) {
+          await new Promise<void>((resolve) => window.grecaptcha!.ready(resolve));
+          const token = await window.grecaptcha.execute(recaptchaKey, { action: 'submit' });
+          tokenEl.value = token;
+        }
+
+        // 2. POST to Web3Forms
+        const data = Object.fromEntries(new FormData(form));
+        const res  = await fetch('https://api.web3forms.com/submit', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body:    JSON.stringify(data),
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          if (redirectUrl) {
+            // Redirect to thank-you page on success
+            window.location.href = redirectUrl;
+            return;
+          }
+          // Fallback — show inline success when no redirect configured
+          success?.classList.remove('hidden');
+          form.reset();
+        } else {
+          error?.classList.remove('hidden');
+          console.error('[ContactForm] Web3Forms rejected submission:', json);
+        }
+      } catch (err) {
+        error?.classList.remove('hidden');
+        console.error('[ContactForm] submit error:', err);
+      } finally {
+        // Always restore — even on hard failure — so the user can retry.
+        submit.disabled = false;
+        label.classList.remove('hidden');
+        spinner.classList.add('hidden');
+        submit.setAttribute('aria-label', originalAriaLabel);
+        label.textContent = originalLabel;
+        isSubmitting = false;
+      }
+    });
+  });
+</script>
+
+<style>
+  .hidden {
+    display: none;
+  }
+
+  /* Google reCAPTCHA terms disclosure — small, muted */
+  .recaptcha-terms {
+    font-size:   0.75rem;
+    line-height: 1.5;
+    color:       var(--color-caption);
+    margin:      0;
+  }
+  .recaptcha-terms a {
+    color:           var(--color-caption);
+    text-decoration: underline;
+  }
+  .recaptcha-terms a:hover {
+    color: var(--color-primary);
+  }
+</style>

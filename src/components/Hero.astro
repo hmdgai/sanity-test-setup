@@ -1,0 +1,191 @@
+---
+/**
+ * Hero.astro
+ * ─────────────────────────────────────────────────────
+ * Reusable homepage hero with controlled adaptive height.
+ *
+ * Height strategy:
+ *   Mobile  — full viewport height (min-h-svh) so the hero
+ *             feels immersive on small screens
+ *   Tablet  — min-h floor of 600px
+ *   Desktop — min-h floor of 640px
+ *   4K/UW   — max-h cap of 900px to prevent empty void
+ *
+ * Content sits in the lower-third (flex justify-end) so
+ * headings feel grounded and intentional, not floating.
+ *
+ * Per-client customisation:
+ *   - Pass image, alt, headline, body, ctaText, ctaHref
+ *   - Optional: eyebrow, trustItems, secondaryCta
+ */
+
+interface Props {
+  /** Path to .webp hero background image. Always required — used as poster
+   *  when a video is set, and as the sole background otherwise. */
+  image: string;
+  /** Alt text for the background image (empty if purely decorative) */
+  imageAlt?: string;
+  /** Optional self-hosted MP4 hero video. When set, renders a <video> over
+   *  the poster image; the source is injected by JS only on desktop and
+   *  only when prefers-reduced-motion is "no-preference". Mobile and
+   *  reduced-motion users see the poster image instead — zero video bytes.
+   *  See .claude/skills/hero-video.md for the full pattern + ffmpeg encode spec. */
+  video?: string;
+  /** Eyebrow label above the headline */
+  eyebrow?: string;
+  /** H1 headline text — supports HTML via Fragment */
+  headline: string;
+  /** Supporting paragraph below the headline */
+  body?: string;
+  /** Primary CTA button text */
+  ctaText?: string;
+  /** Primary CTA button href */
+  ctaHref?: string;
+  /** Secondary CTA button text */
+  secondaryCtaText?: string;
+  /** Secondary CTA button href */
+  secondaryCtaHref?: string;
+  /** Trust bar items — array of short strings like "4.9 Google Rating" */
+  trustItems?: string[];
+}
+
+const {
+  image,
+  imageAlt = '',
+  video,
+  eyebrow,
+  headline,
+  body,
+  ctaText = 'Book Now',
+  ctaHref = '#contact',
+  secondaryCtaText,
+  secondaryCtaHref,
+  trustItems,
+} = Astro.props;
+---
+
+<section class="hero-section relative overflow-hidden bg-[--color-hero-dark] min-h-svh md:min-h-[600px] lg:min-h-[640px] 2xl:max-h-[900px] flex flex-col justify-end">
+
+  <!-- Background image — also acts as the video poster when `video` is set -->
+  <img
+    src={image}
+    alt={imageAlt}
+    class="absolute inset-0 w-full h-full object-cover object-center"
+    loading="eager"
+    decoding="async"
+    fetchpriority="high"
+    width="1920"
+    height="1080"
+    aria-hidden={imageAlt ? undefined : 'true'}
+  />
+
+  <!-- Optional self-hosted MP4 hero video.
+       Source is injected by JS only on desktop AND only when
+       prefers-reduced-motion is "no-preference" — mobile and
+       reduced-motion users see the poster image (zero video bytes).
+       preload="none" prevents Safari from fetching metadata uphill
+       of the JS check.
+       See .claude/skills/hero-video.md for the encode spec + the
+       Safari <source media> bug this pattern works around. -->
+  {video && (
+    <video
+      class="hero-video absolute inset-0 w-full h-full object-cover object-center opacity-0"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="none"
+      poster={image}
+      data-video-src={video}
+      data-video-type="video/mp4"
+      aria-hidden="true"
+    ></video>
+  )}
+
+  <!-- Dark overlay for text readability -->
+  <div class="absolute inset-0 bg-gradient-to-t from-[--color-hero-dark]/90 via-[--color-hero-dark]/50 to-[--color-hero-dark]/30" aria-hidden="true"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 px-[--spacing-section-x] pb-16 pt-32 md:pb-20 md:pt-40 lg:pb-24 lg:pt-48">
+    <div class="max-w-[--spacing-container-max] mx-auto">
+
+      {eyebrow && (
+        <span class="eyebrow">{eyebrow}</span>
+      )}
+
+      <h1 class="text-white m-0 mt-3 max-w-3xl" set:html={headline} />
+
+      {body && (
+        <p class="m-0 mt-5 text-white/65 max-w-xl text-lg leading-relaxed">
+          {body}
+        </p>
+      )}
+
+      {(ctaText || secondaryCtaText) && (
+        <div class="flex flex-wrap items-center gap-4 mt-8">
+          {ctaText && (
+            <a href={ctaHref} class="btn btn-default">{ctaText}</a>
+          )}
+          {secondaryCtaText && secondaryCtaHref && (
+            <a href={secondaryCtaHref} class="btn btn-transparent">{secondaryCtaText}</a>
+          )}
+        </div>
+      )}
+
+      {trustItems && trustItems.length > 0 && (
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-10 pt-8 border-t border-white/10">
+          {trustItems.map((item) => (
+            <span class="text-sm font-medium text-white/50">{item}</span>
+          ))}
+        </div>
+      )}
+
+    </div>
+  </div>
+
+</section>
+
+{video && (
+  <script>
+    /* Hero video — JS-injected source.
+       Why JS-attached <source> instead of <source media="...">:
+       Safari has a long-standing bug where <source media> inside <video>
+       falls through to "no playable source" even on matching viewports —
+       a centred play overlay appears over the poster instead of playback.
+       JS-attached source has no media attribute for Safari to misparse.
+       Mobile and reduced-motion users get ZERO video bytes — no metadata,
+       no decode allocation, just the poster image they already paid for. */
+    const heroVideo = document.querySelector('video.hero-video');
+    if (heroVideo instanceof HTMLVideoElement) {
+      const isDesktop     = window.matchMedia('(min-width: 768px)').matches;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (isDesktop && !reducedMotion) {
+        const source = document.createElement('source');
+        source.src  = heroVideo.dataset.videoSrc ?? '';
+        source.type = heroVideo.dataset.videoType ?? 'video/mp4';
+        heroVideo.appendChild(source);
+        heroVideo.load();
+        heroVideo.addEventListener('canplay', () => {
+          heroVideo.classList.remove('opacity-0');
+          heroVideo.classList.add('opacity-100');
+        }, { once: true });
+      } else {
+        // Mobile / reduced-motion — never start playback. autoplay is
+        // honoured only when a source is attached, so leaving it off is
+        // safe, but we strip the attribute defensively in case browsers
+        // start prefetching just from the autoplay hint.
+        heroVideo.removeAttribute('autoplay');
+      }
+    }
+  </script>
+)}
+
+<style>
+  .hero-video {
+    transition: opacity 0.6s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-video { transition: none; }
+  }
+</style>
