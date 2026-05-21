@@ -1,0 +1,139 @@
+---
+/**
+ * OrbitalDiagram — the recurring WGB motif: three concentric
+ * ellipses at a slight tilt, a central ✦, and three labelled
+ * dots around the outermost ring (References 4–7 of the brief).
+ *
+ * Pillar progression — `glowIntensity` (0–3) ramps the electric-
+ * blue ring glow across the three service-pillar sections:
+ *   0 = no glow (overview)
+ *   1 = subtle (Pillar 1 — Diagnose)
+ *   2 = moderate (Pillar 2 — Intervene)
+ *   3 = full glow (Pillar 3 — Stay close)
+ *
+ * Props:
+ *   labels        — exactly 3 strings positioned around the ring.
+ *   glowIntensity — 0–3. Default 0.
+ *   size          — px width. Default 480. SVG scales by viewBox.
+ *   class         — extra utility classes on the wrapper.
+ *   theme         — "dark" (cream rings on dark bg, default)
+ *                   "light" (dark rings on cream bg)
+ */
+interface Props {
+  labels: [string, string, string]
+  glowIntensity?: 0 | 1 | 2 | 3
+  size?: number
+  class?: string
+  theme?: 'dark' | 'light'
+}
+
+const {
+  labels,
+  glowIntensity = 0,
+  size = 480,
+  class: className = '',
+  theme = 'dark',
+} = Astro.props
+
+const isDark = theme === 'dark'
+const ringColour  = isDark ? '#FBF1E4' : '#0A0A0A'
+const labelColour = isDark ? '#FBF1E4' : '#0A0A0A'
+const dotColour   = '#1A1AFF'        /* electric blue dots on every theme */
+const sparkleColour = isDark ? '#FBF1E4' : '#0A0A0A'
+
+/* Glow intensity → outer ring stroke width and blur radius.
+   Filter is only applied when intensity > 0 so default render
+   stays cheap (no extra paint layer). */
+const ringOpacity = isDark ? 0.32 : 0.45
+const glowBlur     = [0, 6, 12, 20][glowIntensity]
+const glowOpacity  = [0, 0.25, 0.55, 0.9][glowIntensity]
+const outerStroke  = [1, 1.25, 1.5, 1.75][glowIntensity]
+
+/* Three label anchor points on the outermost ellipse, distributed
+   so they don't crowd each other. Positions are pre-computed for
+   a tilted ellipse (cx=200, rx=180, ry=64, rotated ~-18°). */
+const points = [
+  { x: 50,  y: 175, anchor: 'end',    labelDX: -10, labelDY: 5  }, /* upper-left */
+  { x: 350, y: 175, anchor: 'start',  labelDX: 10,  labelDY: 5  }, /* upper-right */
+  { x: 200, y: 280, anchor: 'middle', labelDX: 0,   labelDY: 22 }, /* bottom */
+] as const
+
+const uid = `orbit-${Math.random().toString(36).slice(2, 8)}`
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 400 400"
+  xmlns="http://www.w3.org/2000/svg"
+  class={className}
+  role="img"
+  aria-label={`Orbital diagram showing the three pillars: ${labels[0]}, ${labels[1]}, ${labels[2]}.`}
+  focusable="false"
+>
+  {glowBlur > 0 && (
+    <defs>
+      <filter id={`${uid}-glow`} x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation={glowBlur} />
+      </filter>
+    </defs>
+  )}
+
+  {/* Three concentric tilted ellipses, rotated ~-18° to give the
+      "planet at an angle" feel. Smallest ring first so the outer
+      ring (which gets the glow) renders on top. */}
+  <g transform="rotate(-18 200 200)">
+    <ellipse cx="200" cy="200" rx="100" ry="36"
+      fill="none"
+      stroke={ringColour}
+      stroke-width="1"
+      opacity={ringOpacity * 0.7}
+    />
+    <ellipse cx="200" cy="200" rx="140" ry="50"
+      fill="none"
+      stroke={ringColour}
+      stroke-width="1"
+      opacity={ringOpacity * 0.85}
+    />
+    {/* Outer ring — receives the glow */}
+    {glowBlur > 0 && (
+      <ellipse cx="200" cy="200" rx="180" ry="64"
+        fill="none"
+        stroke={dotColour}
+        stroke-width={outerStroke * 2.5}
+        opacity={glowOpacity}
+        filter={`url(#${uid}-glow)`}
+      />
+    )}
+    <ellipse cx="200" cy="200" rx="180" ry="64"
+      fill="none"
+      stroke={ringColour}
+      stroke-width={outerStroke}
+      opacity={ringOpacity}
+    />
+  </g>
+
+  {/* Central ✦ sparkle — sits at the orbit centre */}
+  <path
+    d="M200 168 L204 196 L232 200 L204 204 L200 232 L196 204 L168 200 L196 196 Z"
+    fill={sparkleColour}
+    opacity={isDark ? 0.95 : 1}
+  />
+
+  {/* Three labelled points around the outer ring */}
+  {points.map((p, i) => (
+    <g>
+      <circle cx={p.x} cy={p.y} r="5" fill={dotColour} />
+      <text
+        x={p.x + p.labelDX}
+        y={p.y + p.labelDY}
+        text-anchor={p.anchor}
+        fill={labelColour}
+        font-family="'Inter Tight Variable', 'Inter Tight', sans-serif"
+        font-weight="600"
+        font-size="13"
+        letter-spacing="0.5"
+      >{labels[i]}</text>
+    </g>
+  ))}
+</svg>

@@ -1,0 +1,48 @@
+---
+/**
+ * DiagonalSweep — the electric-blue diagonal slash used as a
+ * footer accent (Reference 10 of the brief). Decorative only.
+ *
+ * Renders as a full-width SVG that fills its container; place
+ * inside an absolutely-positioned wrapper to control where it
+ * sits behind the footer content.
+ *
+ * Props:
+ *   direction — "tl-br" (default, top-left → bottom-right)
+ *               "tr-bl" (top-right → bottom-left mirror)
+ *   colour    — fill colour. Default #1A1AFF (brand electric blue).
+ *   opacity   — 0–1. Default 1.
+ *   class     — extra utility classes.
+ */
+interface Props {
+  direction?: 'tl-br' | 'tr-bl'
+  colour?: string
+  opacity?: number
+  class?: string
+}
+
+const {
+  direction = 'tl-br',
+  colour = '#1A1AFF',
+  opacity = 1,
+  class: className = '',
+} = Astro.props
+
+const path = direction === 'tl-br'
+  ? 'M 0 60 L 100 0 L 100 40 L 0 100 Z'
+  : 'M 0 0 L 100 60 L 100 100 L 0 40 Z'
+---
+
+<svg
+  width="100%"
+  height="100%"
+  viewBox="0 0 100 100"
+  preserveAspectRatio="none"
+  xmlns="http://www.w3.org/2000/svg"
+  class={className}
+  style={`opacity: ${opacity}`}
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d={path} fill={colour} />
+</svg>

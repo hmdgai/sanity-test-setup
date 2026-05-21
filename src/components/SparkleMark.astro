@@ -1,0 +1,48 @@
+---
+/**
+ * SparkleMark — the WGB ✦ 4-point sparkle glyph.
+ *
+ * Used as: (a) the logo mark, (b) a footer decorative element,
+ * (c) bullet replacements in some lists, (d) the icon inside the
+ * electric-blue accent card on the pain points section.
+ *
+ * Render as inline SVG so it inherits text colour and resists CLS.
+ *
+ * Props:
+ *   size       — px width/height. Default 16.
+ *   class      — extra utility classes (e.g. "text-primary").
+ *   decorative — true → aria-hidden + focusable=false (default).
+ *                false → render as an icon with role + title.
+ *   title      — accessible name when decorative=false.
+ */
+interface Props {
+  size?: number
+  class?: string
+  decorative?: boolean
+  title?: string
+}
+
+const {
+  size = 16,
+  class: className = '',
+  decorative = true,
+  title = 'Sparkle',
+} = Astro.props
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="currentColor"
+  xmlns="http://www.w3.org/2000/svg"
+  class={className}
+  aria-hidden={decorative ? 'true' : undefined}
+  role={decorative ? undefined : 'img'}
+  focusable="false"
+>
+  {!decorative && <title>{title}</title>}
+  <path
+    d="M12 0 L13.6 9.4 L22.9 11 L13.6 12.6 L12 22 L10.4 12.6 L1.1 11 L10.4 9.4 Z"
+  />
+</svg>

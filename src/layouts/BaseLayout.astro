@@ -39,7 +39,7 @@ interface Props {
 
 const {
   title,
-  description = "Professional clinic providing expert care in the UK.",
+  description = "Concierge medicine for founders and executives. Annual diagnostic deep-dives, 24/7 physician access, proactive longevity protocols. Mayfair, London.",
   noindex = true,
   heroImage,
   heroImageMobile,
@@ -60,7 +60,6 @@ const fullUrl    = baseOrigin + Astro.url.pathname;
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import ReviewsSection from "../components/ReviewsSection.astro";
 import CookieConsent from "../components/CookieConsent.astro";
 import { cookieConsentConfig } from "../config/cookie-consent.config";
 
@@ -281,7 +280,7 @@ const cfg = cookieConsentConfig;
       upgrade-insecure-requests;
     " />
   </head>
-  <body class="bg-white text-slate-600 antialiased">
+  <body class="bg-[--color-cream] text-[--color-body] antialiased">
 
     <!-- ── Header ────────────────────────────────────── -->
     <Header />
@@ -290,13 +289,6 @@ const cfg = cookieConsentConfig;
     <main>
       <slot />
     </main>
-
-    <!-- ── Global Google Reviews carousel (pre-footer trust signal) ───
-         Trustindex-style premium pattern. Native Astro carousel,
-         dynamic JSON-LD schema, free in production. Data lives in
-         src/data/reviews.ts; see .claude/skills/googlereviews-carousel.md
-         for full pattern documentation + customisation guide. -->
-    <ReviewsSection />
 
     <!-- ── Footer ────────────────────────────────────── -->
     <Footer />

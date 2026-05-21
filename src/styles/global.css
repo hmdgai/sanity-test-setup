@@ -11,6 +11,11 @@
 @import "@fontsource-variable/inter-tight";
 @import "@fontsource-variable/inter-tight/wght-italic.css";
 
+/* Source Serif 4 italic — emphasis font for the WGB mixed-font headline
+   pattern (`Engineering longer, better, [em.display-italic]sharper lives[/em]`).
+   Italic variable axis only; we never render this face in roman. */
+@import "@fontsource-variable/source-serif-4/wght-italic.css";
+
 /* ============================================================
    GLOBAL DESIGN SYSTEM
    Reusable Clinic Website Base Template
@@ -29,38 +34,45 @@
 @theme {
 
   /* ──────────────────────────────────────────────────────────
-     PRIMARY BRAND COLOURS
-     Change these three per clinic client.
-     Every button, link, accent, and tint inherits from these.
-
-     Tailwind v4 generates utility classes automatically:
-       --color-primary       → bg-primary  / text-primary  / border-primary
-       --color-primary-hover → bg-primary-hover / text-primary-hover
-       --color-accent        → bg-accent   / text-accent   / border-accent
+     MERIDIAN HEALTH PALETTE (cloned from wgb.agency)
+     Cream + Electric Royal Blue + Near-Black.
+     White is ONLY for card surfaces on cream sections.
+     Orange #FF4D14 reserved for "problem X" icons (Sections 2.2 of the brief).
      ────────────────────────────────────────────────────────── */
-  --color-primary:        #DB003E;   /* main brand — buttons, links, accents    */
-  --color-primary-hover:  #dd0d48;   /* hover state — slightly lighter red      */
-  --color-accent:         #FDF2F5;   /* light brand tint — section backgrounds  */
+  --color-primary:         #1A1AFF;  /* electric royal blue — CTAs, links, accents */
+  --color-primary-hover:   #0F0FE5;  /* deeper blue for hover                       */
+  --color-primary-soft:    #E8E8FF;  /* pale blue — comparison-card icon backgrounds */
+  --color-accent:          #FBF1E4;  /* warm cream — primary section backgrounds     */
+  --color-accent-warn:     #FF4D14;  /* orange — "problem" X icons only              */
+
+  /* Cream + dark surface tokens — keep separate from the legacy aliases
+     so component classes (.btn, .card, .input) still work uninspected. */
+  --color-cream:           #FBF1E4;  /* warm cream — alias of --color-accent         */
+  --color-cream-darker:    #F4E8D5;  /* slightly darker cream — logo strip, alt rows */
+  --color-dark:            #0A0A0A;  /* near-black — alternating dark sections       */
+  --color-dark-2:          #141414;  /* one shade lighter — dark section cards       */
 
   /* ──────────────────────────────────────────────────────────
      CONTENT COLOURS
-     Text colours for headings, body, and captions.
-     Consistent across all clinic builds.
+     Inverse tokens (-inv) for use on dark sections.
      ────────────────────────────────────────────────────────── */
-  --color-headline:  #040303;   /* near-black — all headings h1–h6            */
-  --color-body:      #151515;   /* near-black — paragraphs and body text      */
-  --color-caption:   #94a3b8;   /* light grey — captions, labels, meta text   */
+  --color-headline:      #0A0A0A;   /* near-black — headings on cream                */
+  --color-headline-inv:  #FBF1E4;   /* cream — headings on dark                      */
+  --color-body:          #1A1A1C;   /* near-black — body on cream                    */
+  --color-body-inv:      #D4D4D4;   /* warm grey — body on dark (NOT pure white)     */
+  --color-caption:       #6B6660;   /* warm slate — captions, meta, footer secondary */
 
   /* ──────────────────────────────────────────────────────────
      SURFACE & LAYOUT COLOURS
-     Background and border colours for sections, cards, inputs.
      ────────────────────────────────────────────────────────── */
-  --color-muted:    #F2F2F2;   /* light grey — alternating section backgrounds */
-  --color-surface:  #f8fafc;   /* off-white — cards, form backgrounds          */
-  --color-border:   #e2e8f0;   /* subtle borders and dividers                  */
-  --color-white:    #ffffff;   /* pure white — card backgrounds, nav           */
-  --color-black:    #000000;   /* pure black — use sparingly                   */
-  --color-hero-dark: #0a0f1a;  /* deep navy-black — legal page hero backgrounds */
+  --color-muted:        #F4E8D5;   /* alias of --color-cream-darker for legacy paths */
+  --color-surface:      #FFFFFF;   /* pure white — card surfaces on cream ONLY        */
+  --color-surface-dark: #141414;   /* card surfaces on dark sections                  */
+  --color-border:       #E5E0D5;   /* warm beige border on cream                      */
+  --color-border-dark:  #2A2A2A;   /* subtle border on dark sections                  */
+  --color-white:        #FFFFFF;   /* pure white                                       */
+  --color-black:        #0A0A0A;   /* alias of --color-dark — no pure black used      */
+  --color-hero-dark:    #0A0A0A;   /* alias for legacy legal page hero usage          */
 
   /* ──────────────────────────────────────────────────────────
      TYPOGRAPHY — FONT FAMILIES
@@ -93,9 +105,11 @@
   /* Primary family is the self-hosted variable font from @fontsource.
      'Inter Tight' / 'Inter' fallbacks cover any env where the variable
      font isn't loaded yet; system fallbacks last. */
-  --font-heading:  'Inter Tight Variable', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
-  --font-body:     'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-sans:     'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading:       'Inter Tight Variable', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+  --font-body:          'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans:          'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Editorial italic for the WGB mixed-font emphasis pattern */
+  --font-serif-italic:  'Source Serif 4 Variable', 'Source Serif Pro', Georgia, 'Times New Roman', serif;
 
   /* ──────────────────────────────────────────────────────────
      TYPOGRAPHY — RESPONSIVE HEADING SIZES (clamp)
@@ -115,24 +129,24 @@
      Line-height: --text-h1--line-height (Tailwind v4 syntax)
      ────────────────────────────────────────────────────────── */
 
-  /* H1 — Hero headlines, page titles
-     Mobile: ~40px  →  Desktop: ~72px
-     Tight line-height for impactful large type              */
-  --text-h1:                  clamp(2.5rem, 3vw + 1.8rem, 4.5rem);
-  --text-h1--line-height:     1.08;
+  /* H1 — Hero headlines, page titles. WGB-scale oversized display.
+     Mobile: ~48px  →  Desktop: ~104px
+     Tight line-height 0.95 for impactful large type        */
+  --text-h1:                  clamp(3rem, 5vw + 1rem, 6.5rem);
+  --text-h1--line-height:     0.95;
   --text-h1--letter-spacing:  -0.03em;
 
-  /* H2 — Section headings
-     Mobile: ~32px  →  Desktop: ~56px                       */
-  --text-h2:                  clamp(2rem, 2.25vw + 1.47rem, 3.5rem);
-  --text-h2--line-height:     1.12;
-  --text-h2--letter-spacing:  -0.025em;
+  /* H2 — Section headings. WGB-scale.
+     Mobile: ~40px  →  Desktop: ~80px                       */
+  --text-h2:                  clamp(2.5rem, 3vw + 1rem, 5rem);
+  --text-h2--line-height:     1.0;
+  --text-h2--letter-spacing:  -0.02em;
 
   /* H3 — Sub-section titles, card headings
-     Mobile: ~24px  →  Desktop: ~40px                       */
-  --text-h3:                  clamp(1.5rem, 1.5vw + 1.15rem, 2.5rem);
-  --text-h3--line-height:     1.2;
-  --text-h3--letter-spacing:  -0.02em;
+     Mobile: ~24px  →  Desktop: ~36px                       */
+  --text-h3:                  clamp(1.5rem, 1vw + 1rem, 2.25rem);
+  --text-h3--line-height:     1.15;
+  --text-h3--letter-spacing:  -0.015em;
 
   /* H4 — Card titles, feature names, sidebar headings
      Mobile: ~20px  →  Desktop: ~28px                       */
@@ -586,6 +600,35 @@
   }
 
 
+  /* ════════════════════════════════════════════════════════
+     DISPLAY-ITALIC — WGB MIXED-FONT HEADLINE PATTERN
+     ════════════════════════════════════════════════════════
+
+     The signature wgb.agency move: a heavy sans-serif headline
+     with a single italicised SERIF word/phrase for emphasis.
+
+     Markup:
+       <h1>
+         Engineering longer, better,
+         <em class="display-italic">sharper lives</em>.
+       </h1>
+
+     Visual contrast: heavy condensed sans (Inter Tight 700-800)
+     against an editorial italic serif (Source Serif 4 Italic).
+     Slightly lower weight + a touch of optical size relief so
+     the italic phrase sits inside the line without breaking
+     the rhythm. Inherits its sizing from the parent heading.
+     ════════════════════════════════════════════════════════ */
+  .display-italic {
+    font-family:    var(--font-serif-italic);
+    font-style:     italic;
+    font-weight:    600;
+    /* Optical adjustment — serif italics read slightly larger
+       than the heavy sans at the same nominal size, so trim
+       letter-spacing and leave size to inherit from <h1>/<h2>. */
+    letter-spacing: -0.01em;
+  }
+
   /* ── Section header — eyebrow + heading + subtext ─────────
      Used at the top of: Services, Testimonials, Team, FAQ etc */
   .section-header {
@@ -834,6 +877,68 @@
   }
 
 }
+
+
+/* ============================================================
+   TAILWIND v4 ARBITRARY-VALUE BACKFILL
+   ────────────────────────────────────────────────────────────
+   Tailwind v4 emits `bg-[--color-cream]` as
+   `background-color: --color-cream;` (no var() wrapper) which is
+   invalid CSS and silently dropped. The HMDG base template relies
+   on this `bg-[--color-X]` / `text-[--color-X]` / `border-[--color-X]`
+   syntax in hundreds of places, so we map the escaped selectors to
+   proper `var()` references here. Unlayered → wins over Tailwind's
+   broken @layer utilities output.
+   ============================================================ */
+
+/* Backgrounds */
+.bg-\[--color-cream\]            { background-color: var(--color-cream); }
+.bg-\[--color-cream-darker\]     { background-color: var(--color-cream-darker); }
+.bg-\[--color-dark\]             { background-color: var(--color-dark); }
+.bg-\[--color-dark-2\]           { background-color: var(--color-dark-2); }
+.bg-\[--color-primary\]          { background-color: var(--color-primary); }
+.bg-\[--color-primary-hover\]    { background-color: var(--color-primary-hover); }
+.bg-\[--color-primary-soft\]     { background-color: var(--color-primary-soft); }
+.bg-\[--color-accent\]           { background-color: var(--color-accent); }
+.bg-\[--color-accent-warn\]      { background-color: var(--color-accent-warn); }
+.bg-\[--color-muted\]            { background-color: var(--color-muted); }
+.bg-\[--color-surface\]          { background-color: var(--color-surface); }
+.bg-\[--color-surface-dark\]     { background-color: var(--color-surface-dark); }
+.bg-\[--color-headline\]         { background-color: var(--color-headline); }
+.bg-\[--color-white\]            { background-color: var(--color-white); }
+.bg-\[--color-black\]            { background-color: var(--color-black); }
+
+/* Text */
+.text-\[--color-headline\]       { color: var(--color-headline); }
+.text-\[--color-headline-inv\]   { color: var(--color-headline-inv); }
+.text-\[--color-body\]           { color: var(--color-body); }
+.text-\[--color-body-inv\]       { color: var(--color-body-inv); }
+.text-\[--color-caption\]        { color: var(--color-caption); }
+.text-\[--color-primary\]        { color: var(--color-primary); }
+.text-\[--color-primary-hover\]  { color: var(--color-primary-hover); }
+.text-\[--color-cream\]          { color: var(--color-cream); }
+.text-\[--color-accent-warn\]    { color: var(--color-accent-warn); }
+.text-\[--color-white\]          { color: var(--color-white); }
+
+.hover\:text-\[--color-primary\]:hover       { color: var(--color-primary); }
+.hover\:text-\[--color-primary-hover\]:hover { color: var(--color-primary-hover); }
+.hover\:text-\[--color-headline-inv\]:hover  { color: var(--color-headline-inv); }
+.hover\:text-\[--color-caption\]:hover       { color: var(--color-caption); }
+.hover\:bg-\[--color-primary-hover\]:hover   { background-color: var(--color-primary-hover); }
+.hover\:bg-\[--color-muted\]:hover           { background-color: var(--color-muted); }
+
+/* Borders */
+.border-\[--color-border\]       { border-color: var(--color-border); }
+.border-\[--color-border-dark\]  { border-color: var(--color-border-dark); }
+.border-\[--color-primary\]      { border-color: var(--color-primary); }
+.border-\[--color-headline\]     { border-color: var(--color-headline); }
+.ring-\[--color-dark\]           { --tw-ring-color: var(--color-dark); }
+
+/* Spacing — only the ones referenced via [--spacing-...] in Header/Footer/BaseLayout */
+.px-\[--spacing-section-x\]      { padding-left: var(--spacing-section-x); padding-right: var(--spacing-section-x); }
+.py-\[--spacing-section-y\]      { padding-top: var(--spacing-section-y);  padding-bottom: var(--spacing-section-y); }
+.gap-\[--spacing-gap-md\]        { gap: var(--spacing-gap-md); }
+.gap-\[--spacing-gap-lg\]        { gap: var(--spacing-gap-lg); }
 
 
 /* ============================================================
