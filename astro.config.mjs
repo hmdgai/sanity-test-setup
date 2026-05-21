@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import cloudflare from '@astrojs/cloudflare';
+import sanity from '@sanity/astro';
+import react from '@astrojs/react';
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -137,7 +139,17 @@ export default defineConfig({
     imageService: 'passthrough',  // Don't use Cloudflare Images binding — avoids reserved name conflict
     platformProxy: { enabled: true }, // Enable Wrangler proxy for local dev (reads .dev.vars)
   }),
-  integrations: [sitemapAutoScan(), stripHtmlComments()],
+  integrations: [
+    sanity({
+      projectId: process.env.PUBLIC_SANITY_PROJECT_ID || 'd0kq26e7',
+      dataset: process.env.PUBLIC_SANITY_DATASET || 'production',
+      useCdn: true,
+      apiVersion: '2024-01-01',
+    }),
+    react(),
+    sitemapAutoScan(),
+    stripHtmlComments(),
+  ],
   vite: {
     plugins: [tailwindcss()]
   }

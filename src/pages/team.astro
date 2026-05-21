@@ -1,0 +1,47 @@
+---
+import {getTeamMembers} from '../lib/queries'
+import {urlFor} from '../sanity'
+
+const team = await getTeamMembers()
+---
+
+<html>
+  <head>
+    <title>Our Team — Sanity Test</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 1rem; }
+      .member { border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
+      .member img { max-width: 200px; border-radius: 8px; }
+      .empty { background: #fef3c7; padding: 1rem; border-radius: 8px; }
+    </style>
+  </head>
+  <body>
+    <h1>Our Team</h1>
+    {team.length === 0 ? (
+      <div class="empty">
+        <p><strong>No team members found.</strong></p>
+        <p>This is the Sanity test page. If you see this message, the Astro → Sanity connection is working but no published team members exist yet.</p>
+        <p>To test:</p>
+        <ol>
+          <li>Open the Sanity Studio (usually <code>http://localhost:3333</code>)</li>
+          <li>Click "Team Members" in the sidebar</li>
+          <li>Click "Create new"</li>
+          <li>Fill in a name and role</li>
+          <li><strong>Click Publish</strong> (not just save)</li>
+          <li>Refresh this page — you should see the team member appear</li>
+        </ol>
+      </div>
+    ) : (
+      team.map(member => (
+        <div class="member">
+          {member.photo && (
+            <img src={urlFor(member.photo).width(300).url()} alt={member.photo.alt || member.name} />
+          )}
+          <h2>{member.name}</h2>
+          {member.role && <p><strong>{member.role}</strong></p>}
+          {member.bio && <p>{member.bio}</p>}
+        </div>
+      ))
+    )}
+  </body>
+</html>
