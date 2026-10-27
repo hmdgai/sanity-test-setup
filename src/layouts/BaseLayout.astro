@@ -171,21 +171,9 @@ const cfg = cookieConsentConfig;
       })();
     </script>
 
-    <!-- ── Google Tag Manager — DEFERRED loader ──────────────────────────
-         Why deferred (interim, until Cloudflare Zaraz migration):
-           Loading GTM synchronously (even with async) costs 150-220 KB
-           of third-party JS and ~1500 ms of TBT — PageSpeed flags it
-           every time. We defer the actual script-tag injection to:
-             - requestIdleCallback (10s timeout), OR
-             - first user interaction (mouseenter / touchstart / scroll / keydown), OR
-             - 6s setTimeout fallback for older Safari (no rIC support).
-           dataLayer + gtm.start push run synchronously here so any code
-           that fires gtag / dataLayer.push() before GTM loads still
-           queues correctly — GTM consumes the queue once it boots.
-         When the domain is on Cloudflare proxy: migrate to Zaraz
-         (free tier covers 100k events/month, edge-side, zero browser JS).
-         See .claude/skills/performance.md "Section 3 — Zaraz migration".
-    ──────────────────────────────────────────────────────────────────── -->
+    <!-- GTM requests immediately after the unchanged consent defaults above.
+         Do not defer it to idle, interaction or a timer: short visits can end
+         before those triggers run. The injected script remains asynchronous. -->
     {cfg.gtmId && (
       <script is:inline define:vars={{ _gtmId: cfg.gtmId }}>
         // Push gtm.start sync so any early dataLayer.push() ordering is preserved.
@@ -202,25 +190,8 @@ const cfg = cookieConsentConfig;
           (document.head || document.body).appendChild(s);
         }
 
-        // Triggers — first one to fire wins.
-        var INTERACTION_EVENTS = ['mouseenter', 'touchstart', 'scroll', 'keydown'];
-        function onInteraction() {
-          loadGtm();
-          INTERACTION_EVENTS.forEach(function (ev) {
-            window.removeEventListener(ev, onInteraction, { passive: true });
-          });
-        }
-        INTERACTION_EVENTS.forEach(function (ev) {
-          window.addEventListener(ev, onInteraction, { passive: true });
-        });
-
-        if ('requestIdleCallback' in window) {
-          // Modern browsers — load when the main thread is idle, hard cap 10s.
-          window.requestIdleCallback(loadGtm, { timeout: 10000 });
-        } else {
-          // Safari fallback — older Safari has no requestIdleCallback.
-          window.setTimeout(loadGtm, 6000);
-        }
+        // Include short visits without waiting for idle time or interaction.
+        loadGtm();
       </script>
     )}
 

@@ -1,5 +1,8 @@
 # Skill: Performance — Site-Wide Optimisations
 
+> **GTM timing update (2026-10-27):** Hannah requested the Santis immediate-loading fix for this site. GTM now requests immediately after the existing consent bootstrap, instead of requestIdleCallback, interaction or the 6-second fallback. Consent settings and async script loading are unchanged. Do not reintroduce the delay for PageSpeed scores; measure the deployed performance impact separately.
+
+
 The production-grade performance fixes shipped on Northern Medical
 (client clone of this template) during pre-launch. Every new client
 clone — and the base template itself — should inherit these patterns.
